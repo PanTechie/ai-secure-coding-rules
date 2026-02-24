@@ -2,24 +2,24 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, Cursor, and other AI coding assistants.
 
-A curated collection of **762+ security rules** derived from official OWASP, CWE/MITRE, NIST, and global privacy standards, designed to be placed in your AI coding assistant's rules directory. When active, your AI assistant will automatically enforce security best practices while writing, reviewing, or refactoring code.
+A curated collection of **820+ security rules** derived from official OWASP, CWE/MITRE, NIST, CIS, NSA/CISA, and global privacy standards, designed to be placed in your AI coding assistant's rules directory. When active, your AI assistant will automatically enforce security best practices while writing, reviewing, or refactoring code.
 
 ---
 
 ## 📁 Rules Collection
 
-| File                                                                             | Standard                                   | Domain                           |     Lines |    Rules |
-| -------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------- | --------: | -------: |
-| [`code-security-owasp-top10-2025.md`](code-security-owasp-top10-2025.md)         | OWASP Top 10:2025                          | Web Applications                 |       308 |      ~78 |
-| [`code-security-owasp-api-top10-2023.md`](code-security-owasp-api-top10-2023.md) | OWASP API Security Top 10:2023             | APIs & Microservices             |       716 |      ~71 |
-| [`code-security-owasp-llm-top10-2025.md`](code-security-owasp-llm-top10-2025.md) | OWASP Top 10 for LLM:2025                  | AI/LLM Applications              |       787 |      ~75 |
-| [`code-security-owasp-asvs-5.0.md`](code-security-owasp-asvs-5.0.md)             | OWASP ASVS 5.0                             | Verification Standard (L1/L2/L3) |       506 |     ~118 |
-| [`code-security-mobile.md`](code-security-mobile.md)                             | OWASP Mobile Top 10:2024 + MASVS 2.1       | Mobile (Android & iOS)           |       511 |      ~61 |
-| [`code-security-secrets.md`](code-security-secrets.md)                           | Industry Best Practices                    | Secrets Management               |       684 |      ~60 |
-| [`code-security-infrastructure.md`](code-security-infrastructure.md)             | Industry Best Practices                    | Infrastructure & Cloud           |       689 |      ~76 |
-| [`code-security-cwe-top25-2025.md`](code-security-cwe-top25-2025.md)             | CWE Top 25:2025 (MITRE/CISA)               | Code-Level Bug Patterns          |       864 |     ~103 |
-| [`code-security-privacy.md`](code-security-privacy.md)                           | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA | Privacy Engineering              |       782 |     ~120 |
-|                                                                                  |                                            | **Total**                        | **5,847** | **~762** |
+| File                                                                             | Standard                                       | Domain                           |     Lines |    Rules |
+| -------------------------------------------------------------------------------- | ---------------------------------------------- | -------------------------------- | --------: | -------: |
+| [`code-security-owasp-top10-2025.md`](code-security-owasp-top10-2025.md)         | OWASP Top 10:2025                              | Web Applications                 |       308 |      ~78 |
+| [`code-security-owasp-api-top10-2023.md`](code-security-owasp-api-top10-2023.md) | OWASP API Security Top 10:2023                 | APIs & Microservices             |       716 |      ~71 |
+| [`code-security-owasp-llm-top10-2025.md`](code-security-owasp-llm-top10-2025.md) | OWASP Top 10 for LLM:2025                      | AI/LLM Applications              |       787 |      ~75 |
+| [`code-security-owasp-asvs-5.0.md`](code-security-owasp-asvs-5.0.md)             | OWASP ASVS 5.0                                 | Verification Standard (L1/L2/L3) |       506 |     ~118 |
+| [`code-security-mobile.md`](code-security-mobile.md)                             | OWASP Mobile Top 10:2024 + MASVS 2.1           | Mobile (Android & iOS)           |       511 |      ~61 |
+| [`code-security-secrets.md`](code-security-secrets.md)                           | Industry Best Practices                        | Secrets Management               |       684 |      ~60 |
+| [`code-security-iac.md`](code-security-iac.md)                                   | OWASP Docker/K8s/CI-CD Top 10 + CIS + NSA/CISA | Infrastructure as Code           |       856 |     ~134 |
+| [`code-security-cwe-top25-2025.md`](code-security-cwe-top25-2025.md)             | CWE Top 25:2025 (MITRE/CISA)                   | Code-Level Bug Patterns          |       864 |     ~103 |
+| [`code-security-privacy.md`](code-security-privacy.md)                           | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA     | Privacy Engineering              |       782 |     ~120 |
+|                                                                                  |                                                | **Total**                        | **6,014** | **~820** |
 
 ---
 
@@ -127,18 +127,20 @@ description: >
 SKILLEOF
 cp ai-security-rules/code-security-owasp-asvs-5.0.md .agent/skills/security-asvs/rules.md
 
-# Infrastructure Security skill
-mkdir -p .agent/skills/security-infrastructure/
-cat > .agent/skills/security-infrastructure/SKILL.md << 'SKILLEOF'
+# Infrastructure as Code skill
+mkdir -p .agent/skills/security-iac/
+cat > .agent/skills/security-iac/SKILL.md << 'SKILLEOF'
 ---
-name: Infrastructure & Cloud Security
+name: Infrastructure as Code Security
 description: >
-  Security rules for infrastructure and cloud environments. Activate when working
-  with Docker, Kubernetes, Terraform, CloudFormation, CI/CD pipelines, IAM policies,
-  cloud storage, network configuration, or any IaC templates.
+  Security rules for IaC and DevOps based on OWASP Docker/Kubernetes/CI-CD Top 10,
+  CIS Benchmarks, and NSA/CISA Kubernetes Hardening Guide. Activate when working
+  with Dockerfiles, docker-compose, Kubernetes manifests, Helm charts, Terraform,
+  CloudFormation, Pulumi, CI/CD pipelines (GitHub Actions, GitLab CI, Jenkins),
+  or cloud provider configuration (AWS, Azure, GCP).
 ---
 SKILLEOF
-cp ai-security-rules/code-security-infrastructure.md .agent/skills/security-infrastructure/rules.md
+cp ai-security-rules/code-security-iac.md .agent/skills/security-iac/rules.md
 
 # CWE Top 25 skill
 mkdir -p .agent/skills/security-cwe/
@@ -191,7 +193,7 @@ your-project/
 │       ├── security-asvs/
 │       │   ├── SKILL.md
 │       │   └── rules.md
-│       ├── security-infrastructure/
+│       ├── security-iac/
 │       │   ├── SKILL.md
 │       │   └── rules.md
 │       ├── security-cwe/
@@ -211,7 +213,7 @@ mkdir -p .agent/rules/
 cp ai-security-rules/code-security-*.md .agent/rules/
 ```
 
-This works but loads all 762+ rules into every interaction, which may consume significant context window space.
+This works but loads all 820+ rules into every interaction, which may consume significant context window space.
 
 ---
 
@@ -234,16 +236,17 @@ Most AI coding assistants support a rules or instructions directory. Copy the `.
 
 You don't need all of them. Pick the files relevant to your project:
 
-| If your project is...              | Use these files                                                           |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| A web application                  | `owasp-top10-2025` + `secrets`                                            |
-| A REST/GraphQL API                 | `owasp-api-top10-2023` + `secrets`                                        |
-| An LLM-powered app                 | `owasp-llm-top10-2025` + `secrets`                                        |
-| A mobile app                       | `mobile` + `secrets`                                                      |
-| A full-stack app                   | `owasp-top10-2025` + `owasp-api-top10-2023` + `secrets`                   |
-| C/C++ native code                  | `cwe-top25-2025` + `secrets` + `infrastructure`                           |
-| Any project handling personal data | `privacy` + relevant security files above                                 |
-| Regulated / high-security          | All of the above + `owasp-asvs-5.0` + `infrastructure` + `cwe-top25-2025` |
+| If your project is...              | Use these files                                         |
+| ---------------------------------- | ------------------------------------------------------- |
+| A web application                  | `owasp-top10-2025` + `secrets`                          |
+| A REST/GraphQL API                 | `owasp-api-top10-2023` + `secrets`                      |
+| An LLM-powered app                 | `owasp-llm-top10-2025` + `secrets`                      |
+| A mobile app                       | `mobile` + `secrets`                                    |
+| A full-stack app                   | `owasp-top10-2025` + `owasp-api-top10-2023` + `secrets` |
+| C/C++ native code                  | `cwe-top25-2025` + `secrets` + `iac`                    |
+| Any project handling personal data | `privacy` + relevant security files above               |
+| Containerized / Kubernetes         | `iac` + `secrets` + relevant app security file          |
+| Regulated / high-security          | All of the above + `owasp-asvs-5.0` + `cwe-top25-2025`  |
 
 ### 4. Understand loading strategies
 
@@ -303,9 +306,9 @@ Integrates OWASP Mobile Top 10:2024, MASVS 2.1, and MASTG into a unified guide. 
 
 Comprehensive guide for handling secrets: vault integration, rotation policies, Git leak prevention, CI/CD secrets, container secrets, password hashing, encryption keys, log sanitization, and token management.
 
-### Infrastructure & Cloud
+### Infrastructure as Code (IaC)
 
-Covers IaC security, IAM/least privilege, network segmentation, container hardening, cloud storage, database security, logging/monitoring, CI/CD pipelines, Kubernetes security, and disaster recovery.
+Comprehensive IaC security covering 6 layers: **Container Images** (OWASP Docker Top 10, CIS Docker Benchmark), **Container Runtime** (hardened compose, capabilities, seccomp), **Kubernetes** (OWASP K8s Top 10, CIS K8s Benchmark, NSA/CISA Hardening Guide v1.2), **IaC Templates** (Terraform, CloudFormation, Pulumi), **CI/CD Pipelines** (OWASP CI/CD Top 10 — all 10 risks), and **Cloud Provider** (AWS/Azure/GCP hardening with SCPs, policies, and guardrails). Includes scanning tool reference and minimum security pipeline template.
 
 ### CWE Top 25:2025 — Code-Level Bug Patterns
 
@@ -357,25 +360,31 @@ These security rules work alongside other rule files (coding standards, architec
 
 ## 📋 Standards Coverage
 
-| Standard                  | Version      | Year  | Coverage                      |
-| ------------------------- | ------------ | ----- | ----------------------------- |
-| OWASP Top 10              | 2025         | 2025  | Full (A01–A10)                |
-| OWASP API Security Top 10 | 2023         | 2023  | Full (API1–API10)             |
-| OWASP Top 10 for LLM      | 2025         | 2025  | Full (LLM01–LLM10)            |
-| OWASP ASVS                | 5.0.0        | 2025  | Full (V1–V17, ~350 reqs)      |
-| OWASP Mobile Top 10       | 2024         | 2024  | Full (M1–M10)                 |
-| OWASP MASVS               | 2.1.0        | 2024  | Full (8 control groups)       |
-| OWASP MASTG               | Latest       | 2024+ | Key references                |
-| NIST SP 800-63B           | Rev 3        | 2017  | Auth/session aligned          |
-| NIST SP 800-57            | Rev 5        | 2020  | Key management aligned        |
-| CWE Top 25                | 2025         | 2025  | Full (all 25 weaknesses)      |
-| NIST Privacy Framework    | 1.1 IPD      | 2025  | Core functions aligned        |
-| GDPR                      | 2016/679     | 2016  | Key articles for developers   |
-| LGPD                      | 13.709/2018  | 2020  | Key articles for developers   |
-| CCPA/CPRA                 | As amended   | 2023  | Key provisions for developers |
-| APPI (Japan)              | 2022 amended | 2022  | Key provisions for developers |
-| PIPEDA (Canada)           | Federal      | 2001+ | Key principles for developers |
-| POPIA (South Africa)      | Act 4/2013   | 2021  | Key sections for developers   |
+| Standard                     | Version                    | Year  | Coverage                      |
+| ---------------------------- | -------------------------- | ----- | ----------------------------- |
+| OWASP Top 10                 | 2025                       | 2025  | Full (A01–A10)                |
+| OWASP API Security Top 10    | 2023                       | 2023  | Full (API1–API10)             |
+| OWASP Top 10 for LLM         | 2025                       | 2025  | Full (LLM01–LLM10)            |
+| OWASP ASVS                   | 5.0.0                      | 2025  | Full (V1–V17, ~350 reqs)      |
+| OWASP Mobile Top 10          | 2024                       | 2024  | Full (M1–M10)                 |
+| OWASP MASVS                  | 2.1.0                      | 2024  | Full (8 control groups)       |
+| OWASP MASTG                  | Latest                     | 2024+ | Key references                |
+| NIST SP 800-63B              | Rev 3                      | 2017  | Auth/session aligned          |
+| NIST SP 800-57               | Rev 5                      | 2020  | Key management aligned        |
+| OWASP Docker Top 10          | Latest                     | 2024  | Full (D1–D10)                 |
+| OWASP Kubernetes Top 10      | 2022 (2025 update pending) | 2022  | Full (K01–K10)                |
+| OWASP CI/CD Top 10           | 2022                       | 2022  | Full (CICD-SEC-01–10)         |
+| CIS Docker Benchmark         | v1.8                       | 2024  | Key controls                  |
+| CIS Kubernetes Benchmark     | Latest                     | 2024  | Key controls                  |
+| NSA/CISA K8s Hardening Guide | v1.2                       | 2022  | Aligned                       |
+| CWE Top 25                   | 2025                       | 2025  | Full (all 25 weaknesses)      |
+| NIST Privacy Framework       | 1.1 IPD                    | 2025  | Core functions aligned        |
+| GDPR                         | 2016/679                   | 2016  | Key articles for developers   |
+| LGPD                         | 13.709/2018                | 2020  | Key articles for developers   |
+| CCPA/CPRA                    | As amended                 | 2023  | Key provisions for developers |
+| APPI (Japan)                 | 2022 amended               | 2022  | Key provisions for developers |
+| PIPEDA (Canada)              | Federal                    | 2001+ | Key principles for developers |
+| POPIA (South Africa)         | Act 4/2013                 | 2021  | Key sections for developers   |
 
 ---
 

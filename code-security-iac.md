@@ -14,16 +14,16 @@ When generating, reviewing, or refactoring infrastructure code — including Doc
 
 ### Source Frameworks
 
-| Framework                               | Coverage                           | Section |
-| --------------------------------------- | ---------------------------------- | ------- |
-| OWASP Docker Top 10                     | Container image & runtime security | §1–§2   |
-| CIS Docker Benchmark v1.8               | Prescriptive container hardening   | §1–§2   |
-| OWASP Kubernetes Top 10                 | K8s-specific risks (K01–K10)       | §3      |
-| CIS Kubernetes Benchmark                | K8s configuration hardening        | §3      |
-| NSA/CISA K8s Hardening Guide v1.2       | Threat model + strategic hardening | §3      |
-| OWASP CI/CD Top 10                      | Pipeline security (CICD-SEC-01–10) | §4      |
-| Terraform/CloudFormation best practices | IaC template hardening             | §5      |
-| CIS Cloud Benchmarks (AWS/Azure/GCP)    | Cloud provider hardening           | §6      |
+| Framework | Coverage | Section |
+|-----------|----------|---------|
+| OWASP Docker Top 10 | Container image & runtime security | §1–§2 |
+| CIS Docker Benchmark v1.8 | Prescriptive container hardening | §1–§2 |
+| OWASP Kubernetes Top 10 | K8s-specific risks (K01–K10) | §3 |
+| CIS Kubernetes Benchmark | K8s configuration hardening | §3 |
+| NSA/CISA K8s Hardening Guide v1.2 | Threat model + strategic hardening | §3 |
+| OWASP CI/CD Top 10 | Pipeline security (CICD-SEC-01–10) | §4 |
+| Terraform/CloudFormation best practices | IaC template hardening | §5 |
+| CIS Cloud Benchmarks (AWS/Azure/GCP) | Cloud provider hardening | §6 |
 
 ---
 
@@ -120,7 +120,7 @@ services:
     cap_drop:
       - ALL
     cap_add:
-      - NET_BIND_SERVICE # Only if binding to ports < 1024
+      - NET_BIND_SERVICE  # Only if binding to ports < 1024
     deploy:
       resources:
         limits:
@@ -143,7 +143,7 @@ services:
 networks:
   internal:
     driver: bridge
-    internal: true # No external access
+    internal: true  # No external access
 ```
 
 ---
@@ -512,7 +512,7 @@ jobs:
 - uses: actions/checkout@v4
 
 # ✅ SECURE — pinned to commit SHA
-- uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+- uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
 ```
 
 ### CICD-SEC-09 — Improper Artifact Integrity Validation
@@ -720,16 +720,16 @@ resource "aws_organizations_policy" "security_guardrails" {
 
 ### Recommended tools by category
 
-| Category                 | Tools                                                       |
-| ------------------------ | ----------------------------------------------------------- |
-| Container image scanning | Trivy, Grype, Snyk Container, Docker Scout                  |
-| IaC scanning             | Checkov, tfsec/Trivy, KICS, Terrascan, cfn_nag              |
-| Secret detection         | Gitleaks, TruffleHog, detect-secrets, git-secrets           |
-| Kubernetes security      | Kubescape, kube-bench (CIS), Kyverno, OPA/Gatekeeper, Falco |
-| Dependency scanning      | Dependabot, Renovate, npm audit, pip-audit, cargo audit     |
-| CI/CD security           | StepSecurity (harden-runner), Scorecard, Legitify           |
-| Cloud posture            | Prowler (AWS), ScoutSuite, CloudSploit, Steampipe           |
-| Image signing            | Cosign (Sigstore), Notation, Docker Content Trust           |
+| Category | Tools |
+|----------|-------|
+| Container image scanning | Trivy, Grype, Snyk Container, Docker Scout |
+| IaC scanning | Checkov, tfsec/Trivy, KICS, Terrascan, cfn_nag |
+| Secret detection | Gitleaks, TruffleHog, detect-secrets, git-secrets |
+| Kubernetes security | Kubescape, kube-bench (CIS), Kyverno, OPA/Gatekeeper, Falco |
+| Dependency scanning | Dependabot, Renovate, npm audit, pip-audit, cargo audit |
+| CI/CD security | StepSecurity (harden-runner), Scorecard, Legitify |
+| Cloud posture | Prowler (AWS), ScoutSuite, CloudSploit, Steampipe |
+| Image signing | Cosign (Sigstore), Notation, Docker Content Trust |
 
 ### Minimum CI/CD security pipeline
 
@@ -785,54 +785,54 @@ jobs:
 
 ### Container Security Checklist
 
-| Control                 |         Dockerfile          |              Runtime               |            K8s Manifest            |
-| ----------------------- | :-------------------------: | :--------------------------------: | :--------------------------------: |
-| Non-root user           |       `USER nonroot`        |           `--user 1000`            |        `runAsNonRoot: true`        |
-| Read-only filesystem    |             N/A             |           `--read-only`            |   `readOnlyRootFilesystem: true`   |
-| Drop capabilities       |             N/A             |          `--cap-drop=ALL`          |     `capabilities.drop: [ALL]`     |
-| No privilege escalation |             N/A             | `--security-opt=no-new-privileges` | `allowPrivilegeEscalation: false`  |
-| Resource limits         |             N/A             |      `--memory=512m --cpus=1`      |         `resources.limits`         |
-| Pinned image            | `FROM image:tag@sha256:...` |                N/A                 |      `image: ...@sha256:...`       |
-| Health check            |        `HEALTHCHECK`        |           `--health-cmd`           | `livenessProbe` + `readinessProbe` |
-| Seccomp profile         |             N/A             |    `--security-opt seccomp=...`    |  `seccompProfile: RuntimeDefault`  |
+| Control | Dockerfile | Runtime | K8s Manifest |
+|---------|:---------:|:-------:|:------------:|
+| Non-root user | `USER nonroot` | `--user 1000` | `runAsNonRoot: true` |
+| Read-only filesystem | N/A | `--read-only` | `readOnlyRootFilesystem: true` |
+| Drop capabilities | N/A | `--cap-drop=ALL` | `capabilities.drop: [ALL]` |
+| No privilege escalation | N/A | `--security-opt=no-new-privileges` | `allowPrivilegeEscalation: false` |
+| Resource limits | N/A | `--memory=512m --cpus=1` | `resources.limits` |
+| Pinned image | `FROM image:tag@sha256:...` | N/A | `image: ...@sha256:...` |
+| Health check | `HEALTHCHECK` | `--health-cmd` | `livenessProbe` + `readinessProbe` |
+| Seccomp profile | N/A | `--security-opt seccomp=...` | `seccompProfile: RuntimeDefault` |
 
 ### CI/CD Security Checklist (OWASP CI/CD Top 10)
 
-| #   | Risk                        | Key Mitigation                             |
-| --- | --------------------------- | ------------------------------------------ |
-| 1   | Insufficient Flow Control   | Branch protection + mandatory reviews      |
-| 2   | Inadequate IAM              | Least privilege + OIDC federation          |
-| 3   | Dependency Chain Abuse      | Lockfiles + private registries + scoping   |
-| 4   | Poisoned Pipeline Execution | Protect CI configs + isolate fork builds   |
-| 5   | Insufficient PBAC           | Explicit minimal permissions per job       |
-| 6   | Credential Hygiene          | No hardcoded secrets + rotation + scanning |
-| 7   | Insecure System Config      | Patch CI servers + restrict network + CIS  |
-| 8   | Ungoverned 3rd Parties      | Audit integrations + pin to SHA            |
-| 9   | Artifact Integrity          | Sign images + verify provenance + SBOM     |
-| 10  | Insufficient Logging        | Centralize logs + alert on anomalies       |
+| # | Risk | Key Mitigation |
+|---|------|---------------|
+| 1 | Insufficient Flow Control | Branch protection + mandatory reviews |
+| 2 | Inadequate IAM | Least privilege + OIDC federation |
+| 3 | Dependency Chain Abuse | Lockfiles + private registries + scoping |
+| 4 | Poisoned Pipeline Execution | Protect CI configs + isolate fork builds |
+| 5 | Insufficient PBAC | Explicit minimal permissions per job |
+| 6 | Credential Hygiene | No hardcoded secrets + rotation + scanning |
+| 7 | Insecure System Config | Patch CI servers + restrict network + CIS |
+| 8 | Ungoverned 3rd Parties | Audit integrations + pin to SHA |
+| 9 | Artifact Integrity | Sign images + verify provenance + SBOM |
+| 10 | Insufficient Logging | Centralize logs + alert on anomalies |
 
 ### IaC Security Checklist
 
-| Control              |         Terraform         |      CloudFormation      |      Pulumi       |
-| -------------------- | :-----------------------: | :----------------------: | :---------------: |
-| No hardcoded secrets | `data.aws_secretsmanager` |  `!Ref SecretResource`   | `pulumi.secret()` |
-| Encrypted state      |      S3+KMS backend       |      N/A (managed)       | Encrypted backend |
-| State locking        |         DynamoDB          |      N/A (managed)       |     Built-in      |
-| IaC scanning         |       Checkov/tfsec       |     cfn_nag/cfn-lint     |      Checkov      |
-| Pin module versions  |   `version = "~> 3.0"`    |           N/A            |   Pin packages    |
-| Prevent destroy      | `prevent_destroy = true`  | `DeletionPolicy: Retain` |  `protect: true`  |
+| Control | Terraform | CloudFormation | Pulumi |
+|---------|:---------:|:--------------:|:------:|
+| No hardcoded secrets | `data.aws_secretsmanager` | `!Ref SecretResource` | `pulumi.secret()` |
+| Encrypted state | S3+KMS backend | N/A (managed) | Encrypted backend |
+| State locking | DynamoDB | N/A (managed) | Built-in |
+| IaC scanning | Checkov/tfsec | cfn_nag/cfn-lint | Checkov |
+| Pin module versions | `version = "~> 3.0"` | N/A | Pin packages |
+| Prevent destroy | `prevent_destroy = true` | `DeletionPolicy: Retain` | `protect: true` |
 
 ---
 
 ## Cross-Reference: IaC ↔ Other Security Files
 
-| IaC Requirement                     | Related Security File                                                                 |
-| ----------------------------------- | ------------------------------------------------------------------------------------- |
-| Container image dependencies        | `code-security-cwe-top25-2025.md` — CWE-502 Deserialization, CWE-78 Command Injection |
-| Secrets in pipelines/manifests      | `code-security-secrets.md` — Vault integration, rotation, Git prevention              |
-| API security for K8s services       | `code-security-owasp-api-top10-2023.md` — BOLA, rate limiting                         |
-| ASVS verification for deployed apps | `code-security-owasp-asvs-5.0.md` — V12 Secure Communication, V13 Configuration       |
-| Privacy in cloud data processing    | `code-security-privacy.md` — Cross-border transfers, data residency                   |
+| IaC Requirement | Related Security File |
+|----------------|---------------------|
+| Container image dependencies | `code-security-cwe-top25-2025.md` — CWE-502 Deserialization, CWE-78 Command Injection |
+| Secrets in pipelines/manifests | `code-security-secrets.md` — Vault integration, rotation, Git prevention |
+| API security for K8s services | `code-security-owasp-api-top10-2023.md` — BOLA, rate limiting |
+| ASVS verification for deployed apps | `code-security-owasp-asvs-5.0.md` — V12 Secure Communication, V13 Configuration |
+| Privacy in cloud data processing | `code-security-privacy.md` — Cross-border transfers, data residency |
 
 ---
 
