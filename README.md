@@ -33,19 +33,150 @@ git clone https://github.com/YOUR_USERNAME/ai-security-rules.git
 
 Choose the setup for your AI coding assistant:
 
+---
+
 #### Claude Code
+
+Claude Code automatically reads all `.md` files inside `.claude/rules/` and applies them as system instructions to every interaction. No extra configuration needed.
 
 ```bash
 mkdir -p .claude/rules/
 cp ai-security-rules/code-security-*.md .claude/rules/
 ```
 
+That's it — Claude will enforce the rules automatically.
+
+---
+
 #### Gemini Antigravity
 
+Antigravity has three mechanisms for custom instructions. For security rules, the recommended approach is a **hybrid setup** using **Rules** (always-on) for critical files and **Skills** (on-demand) for specialized files. This prevents context window bloat while keeping core protections always active.
+
+**Why hybrid?** Rules are injected into every interaction (like a system prompt), so loading 500+ rules at once wastes context and can dilute the agent's focus. Skills are loaded only when relevant, keeping the context lean.
+
+##### Step 1 — Core rules (always active)
+
+Place the most critical security files as **Workspace Rules** in `.agent/rules/`. These are always active regardless of what task you ask the agent to do.
+
 ```bash
-mkdir -p .gemini/antigravity/rules/
-cp ai-security-rules/code-security-*.md .gemini/antigravity/rules/
+mkdir -p .agent/rules/
+# Core rules — always on
+cp ai-security-rules/code-security-owasp-top10-2025.md .agent/rules/
+cp ai-security-rules/code-security-secrets.md .agent/rules/
 ```
+
+> Antigravity also supports a global rules file at `~/.gemini/GEMINI.md` that applies to all projects. You can add cross-project security policies there.
+
+##### Step 2 — Specialized rules (on-demand Skills)
+
+Create **Skills** for domain-specific rules. Each skill lives in its own directory with a `SKILL.md` file. Antigravity only loads a skill when the agent determines it is relevant to the current task.
+
+```bash
+# API Security skill
+mkdir -p .agent/skills/security-api/
+cat > .agent/skills/security-api/SKILL.md << 'SKILLEOF'
+---
+name: OWASP API Security
+description: >
+  Security rules for REST/GraphQL API development based on OWASP API Security
+  Top 10:2023. Activate when creating, modifying, or reviewing API endpoints,
+  middleware, controllers, route handlers, authentication flows, or rate limiting.
+---
+SKILLEOF
+cp ai-security-rules/code-security-owasp-api-top10-2023.md .agent/skills/security-api/rules.md
+
+# LLM Security skill
+mkdir -p .agent/skills/security-llm/
+cat > .agent/skills/security-llm/SKILL.md << 'SKILLEOF'
+---
+name: OWASP LLM Security
+description: >
+  Security rules for LLM-powered applications based on OWASP Top 10 for
+  LLM:2025. Activate when working with prompts, RAG pipelines, AI agents,
+  model integrations, embedding generation, or LLM API calls.
+---
+SKILLEOF
+cp ai-security-rules/code-security-owasp-llm-top10-2025.md .agent/skills/security-llm/rules.md
+
+# Mobile Security skill
+mkdir -p .agent/skills/security-mobile/
+cat > .agent/skills/security-mobile/SKILL.md << 'SKILLEOF'
+---
+name: OWASP Mobile Security
+description: >
+  Security rules for Android and iOS development based on OWASP Mobile Top 10:2024
+  and MASVS 2.1. Activate when working with mobile apps, Kotlin, Swift, React Native,
+  Flutter, biometrics, Keychain, Keystore, or mobile platform APIs.
+---
+SKILLEOF
+cp ai-security-rules/code-security-mobile.md .agent/skills/security-mobile/rules.md
+
+# ASVS Verification skill
+mkdir -p .agent/skills/security-asvs/
+cat > .agent/skills/security-asvs/SKILL.md << 'SKILLEOF'
+---
+name: OWASP ASVS Verification
+description: >
+  Comprehensive application security verification rules based on OWASP ASVS 5.0
+  (L1/L2/L3). Activate when performing security reviews, compliance checks,
+  authentication/authorization audits, or when the user mentions ASVS, security
+  levels, or verification requirements.
+---
+SKILLEOF
+cp ai-security-rules/code-security-owasp-asvs-5.0.md .agent/skills/security-asvs/rules.md
+
+# Infrastructure Security skill
+mkdir -p .agent/skills/security-infrastructure/
+cat > .agent/skills/security-infrastructure/SKILL.md << 'SKILLEOF'
+---
+name: Infrastructure & Cloud Security
+description: >
+  Security rules for infrastructure and cloud environments. Activate when working
+  with Docker, Kubernetes, Terraform, CloudFormation, CI/CD pipelines, IAM policies,
+  cloud storage, network configuration, or any IaC templates.
+---
+SKILLEOF
+cp ai-security-rules/code-security-infrastructure.md .agent/skills/security-infrastructure/rules.md
+```
+
+##### Resulting project structure
+
+```
+your-project/
+├── .agent/
+│   ├── rules/                              # ← Always active
+│   │   ├── code-security-owasp-top10-2025.md
+│   │   └── code-security-secrets.md
+│   └── skills/                             # ← Loaded on-demand
+│       ├── security-api/
+│       │   ├── SKILL.md                    #   (skill metadata)
+│       │   └── rules.md                    #   (actual rules)
+│       ├── security-llm/
+│       │   ├── SKILL.md
+│       │   └── rules.md
+│       ├── security-mobile/
+│       │   ├── SKILL.md
+│       │   └── rules.md
+│       ├── security-asvs/
+│       │   ├── SKILL.md
+│       │   └── rules.md
+│       └── security-infrastructure/
+│           ├── SKILL.md
+│           └── rules.md
+```
+
+##### Alternative: simple setup (all as Rules)
+
+If you prefer simplicity over context optimization, you can place all files directly in `.agent/rules/`:
+
+```bash
+mkdir -p .agent/rules/
+cp ai-security-rules/code-security-*.md .agent/rules/
+```
+
+This works but loads all 539+ rules into every interaction, which may consume significant context window space.
+
+---
 
 #### Cursor
 
@@ -53,6 +184,10 @@ cp ai-security-rules/code-security-*.md .gemini/antigravity/rules/
 mkdir -p .cursor/rules/
 cp ai-security-rules/code-security-*.md .cursor/rules/
 ```
+
+Cursor reads all rule files from `.cursor/rules/` automatically.
+
+---
 
 #### Other AI assistants
 
@@ -71,7 +206,19 @@ You don't need all of them. Pick the files relevant to your project:
 | A full-stack app          | `owasp-top10-2025` + `owasp-api-top10-2023` + `secrets` |
 | Regulated / high-security | All of the above + `owasp-asvs-5.0` + `infrastructure`  |
 
-### 4. Configure ASVS level (if using)
+### 4. Understand loading strategies
+
+Depending on your AI assistant, rules can be loaded in different ways:
+
+| Strategy                      |   Claude Code    |       Antigravity        |      Cursor      | When to use                        |
+| ----------------------------- | :--------------: | :----------------------: | :--------------: | ---------------------------------- |
+| **All as Rules** (always-on)  | `.claude/rules/` |     `.agent/rules/`      | `.cursor/rules/` | Small projects, few files selected |
+| **Hybrid** (rules + skills)   |       N/A        | Rules + `.agent/skills/` |       N/A        | Recommended for Antigravity        |
+| **All as Skills** (on-demand) |       N/A        |     `.agent/skills/`     |       N/A        | Large projects, many rules         |
+
+> **Tip for Antigravity users:** The hybrid approach (core rules always-on + specialized skills on-demand) gives the best balance between security coverage and context efficiency. See the [Antigravity setup section](#gemini-antigravity) above for detailed instructions.
+
+### 5. Configure ASVS level (if using)
 
 If you include the ASVS file, set your target level at the top of the file:
 
@@ -85,7 +232,7 @@ TARGET_LEVEL: 2
 | **L2** | Most production apps (recommended)                     | ~240         |
 | **L3** | Banking, healthcare, military, critical infrastructure | ~350         |
 
-### 5. Start coding
+### 6. Start coding
 
 That's it. Your AI assistant will automatically read the rules and enforce them when generating or reviewing code.
 
