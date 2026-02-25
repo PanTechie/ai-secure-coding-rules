@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, Cursor, and other AI coding assistants.
 
-A curated collection of **912+ security rules** across 10 files, derived from official OWASP, CWE/MITRE, NIST, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **9 detailed reference files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,006+ security rules** across 11 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **10 detailed reference files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -31,9 +31,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`code-security-iac.md`](code-security-iac.md)                                   | OWASP Docker/K8s/CI-CD Top 10 + CIS + NSA/CISA | Infrastructure as Code           |       856 |     ~134 |
 | [`code-security-cwe-top25-2025.md`](code-security-cwe-top25-2025.md)             | CWE Top 25:2025 (MITRE/CISA)                   | Code-Level Bug Patterns          |       864 |     ~103 |
 | [`code-security-privacy.md`](code-security-privacy.md)                           | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA     | Privacy Engineering              |       782 |     ~120 |
-|                                                                                  |                                                | **Total (detailed)**             | **6,014** | **~820** |
+| [`code-security-secure-by-design.md`](code-security-secure-by-design.md)         | CISA SbD Principles + Pledge + NIST SSDF       | Secure by Design (SbD)           |       452 |      ~94 |
+|                                                                                  |                                                | **Total (detailed)**             | **6,466** | **~914** |
 
-> **Total including essentials:** 10 files, 6,171 lines, ~912 rules
+> **Total including essentials:** 11 files, 6,623 lines, ~1,006 rules
 
 ---
 
@@ -222,6 +223,22 @@ description: >
 ---
 SKILLEOF
 cp ai-secure-coding-rules/code-security-privacy.md .agent/skills/security-privacy/rules.md
+
+# Secure by Design skill
+mkdir -p .agent/skills/security-sbd/
+cat > .agent/skills/security-sbd/SKILL.md << 'SKILLEOF'
+---
+name: Secure by Design (CISA + NIST SSDF)
+description: >
+  Secure by Design rules based on CISA SbD Principles, CISA SbD Pledge 7 Goals,
+  and NIST SSDF SP 800-218. Activate when designing new features or systems,
+  performing architecture reviews, setting up project defaults, configuring
+  security headers, implementing MFA, defining vulnerability disclosure policies,
+  generating SBOMs, or when the user mentions secure by design, secure defaults,
+  SSDF, or CISA.
+---
+SKILLEOF
+cp ai-secure-coding-rules/code-security-secure-by-design.md .agent/skills/security-sbd/rules.md
 ```
 
 ##### Resulting project structure
@@ -256,7 +273,10 @@ your-project/
 │       ├── security-cwe/
 │       │   ├── SKILL.md
 │       │   └── rules.md
-│       └── security-privacy/
+│       ├── security-privacy/
+│       │   ├── SKILL.md
+│       │   └── rules.md
+│       └── security-sbd/
 │           ├── SKILL.md
 │           └── rules.md
 ```
@@ -292,6 +312,7 @@ You don't need all of them. Pick the files relevant to your project:
 | C/C++ native code                  | `cwe-top25-2025` + `secrets` + `iac`                    |
 | Any project handling personal data | `privacy` + relevant security files above               |
 | Containerized / Kubernetes         | `iac` + `secrets` + relevant app security file          |
+| New product / greenfield project   | `secure-by-design` + relevant app security files        |
 | Regulated / high-security          | All of the above + `owasp-asvs-5.0` + `cwe-top25-2025`  |
 
 ### 4. Understand the two-tier strategy
@@ -361,6 +382,10 @@ Complements OWASP by targeting **specific, concrete software bugs** rather than 
 
 Unified privacy-as-code guide with configurable `TARGET_REGULATIONS` selector. Covers the NIST Privacy Framework 1.1, Privacy by Design/Default principles, and 6 global regulations: GDPR (EU), LGPD (Brazil), CCPA/CPRA (California), APPI (Japan), PIPEDA (Canada), and POPIA (South Africa). Includes: data inventory & classification, consent management, data subject rights (DSR) APIs, retention enforcement, cross-border transfer rules, breach notification workflows, automated decision-making, children's data protection, and AI/ML privacy controls.
 
+### Secure by Design (SbD)
+
+Translates CISA's Secure by Design philosophy into actionable development rules. Covers the **3 CISA Principles** (Take Ownership of Customer Security Outcomes, Embrace Radical Transparency, Lead From the Top), all **7 CISA Pledge Goals** (MFA, default passwords, vulnerability class elimination, patch adoption, VDP, CVE transparency, intrusion evidence), and the **NIST SSDF SP 800-218** lifecycle practices (Prepare, Protect, Produce, Respond). Includes: secure defaults checklist, `security.txt` template, MFA enforcement patterns, memory safety roadmap guidance, SBOM generation, remediation SLAs, and a 25-point architecture review checklist.
+
 ---
 
 ## 🏗️ Structure
@@ -403,31 +428,33 @@ These security rules work alongside other rule files (coding standards, architec
 
 ## 📋 Standards Coverage
 
-| Standard                     | Version                    | Year  | Coverage                      |
-| ---------------------------- | -------------------------- | ----- | ----------------------------- |
-| OWASP Top 10                 | 2025                       | 2025  | Full (A01–A10)                |
-| OWASP API Security Top 10    | 2023                       | 2023  | Full (API1–API10)             |
-| OWASP Top 10 for LLM         | 2025                       | 2025  | Full (LLM01–LLM10)            |
-| OWASP ASVS                   | 5.0.0                      | 2025  | Full (V1–V17, ~350 reqs)      |
-| OWASP Mobile Top 10          | 2024                       | 2024  | Full (M1–M10)                 |
-| OWASP MASVS                  | 2.1.0                      | 2024  | Full (8 control groups)       |
-| OWASP MASTG                  | Latest                     | 2024+ | Key references                |
-| NIST SP 800-63B              | Rev 3                      | 2017  | Auth/session aligned          |
-| NIST SP 800-57               | Rev 5                      | 2020  | Key management aligned        |
-| OWASP Docker Top 10          | Latest                     | 2024  | Full (D1–D10)                 |
-| OWASP Kubernetes Top 10      | 2022 (2025 update pending) | 2022  | Full (K01–K10)                |
-| OWASP CI/CD Top 10           | 2022                       | 2022  | Full (CICD-SEC-01–10)         |
-| CIS Docker Benchmark         | v1.8                       | 2024  | Key controls                  |
-| CIS Kubernetes Benchmark     | Latest                     | 2024  | Key controls                  |
-| NSA/CISA K8s Hardening Guide | v1.2                       | 2022  | Aligned                       |
-| CWE Top 25                   | 2025                       | 2025  | Full (all 25 weaknesses)      |
-| NIST Privacy Framework       | 1.1 IPD                    | 2025  | Core functions aligned        |
-| GDPR                         | 2016/679                   | 2016  | Key articles for developers   |
-| LGPD                         | 13.709/2018                | 2020  | Key articles for developers   |
-| CCPA/CPRA                    | As amended                 | 2023  | Key provisions for developers |
-| APPI (Japan)                 | 2022 amended               | 2022  | Key provisions for developers |
-| PIPEDA (Canada)              | Federal                    | 2001+ | Key principles for developers |
-| POPIA (South Africa)         | Act 4/2013                 | 2021  | Key sections for developers   |
+| Standard                     | Version                    | Year      | Coverage                             |
+| ---------------------------- | -------------------------- | --------- | ------------------------------------ |
+| OWASP Top 10                 | 2025                       | 2025      | Full (A01–A10)                       |
+| OWASP API Security Top 10    | 2023                       | 2023      | Full (API1–API10)                    |
+| OWASP Top 10 for LLM         | 2025                       | 2025      | Full (LLM01–LLM10)                   |
+| OWASP ASVS                   | 5.0.0                      | 2025      | Full (V1–V17, ~350 reqs)             |
+| OWASP Mobile Top 10          | 2024                       | 2024      | Full (M1–M10)                        |
+| OWASP MASVS                  | 2.1.0                      | 2024      | Full (8 control groups)              |
+| OWASP MASTG                  | Latest                     | 2024+     | Key references                       |
+| NIST SP 800-63B              | Rev 3                      | 2017      | Auth/session aligned                 |
+| NIST SP 800-57               | Rev 5                      | 2020      | Key management aligned               |
+| OWASP Docker Top 10          | Latest                     | 2024      | Full (D1–D10)                        |
+| OWASP Kubernetes Top 10      | 2022 (2025 update pending) | 2022      | Full (K01–K10)                       |
+| OWASP CI/CD Top 10           | 2022                       | 2022      | Full (CICD-SEC-01–10)                |
+| CIS Docker Benchmark         | v1.8                       | 2024      | Key controls                         |
+| CIS Kubernetes Benchmark     | Latest                     | 2024      | Key controls                         |
+| NSA/CISA K8s Hardening Guide | v1.2                       | 2022      | Aligned                              |
+| CWE Top 25                   | 2025                       | 2025      | Full (all 25 weaknesses)             |
+| CISA Secure by Design        | v2 (Oct 2023)              | 2023      | Full (3 principles + 7 pledge goals) |
+| NIST SP 800-218 (SSDF)       | v1.1 / v1.2 draft          | 2022/2025 | Full (PO/PS/PW/RV)                   |
+| NIST Privacy Framework       | 1.1 IPD                    | 2025      | Core functions aligned               |
+| GDPR                         | 2016/679                   | 2016      | Key articles for developers          |
+| LGPD                         | 13.709/2018                | 2020      | Key articles for developers          |
+| CCPA/CPRA                    | As amended                 | 2023      | Key provisions for developers        |
+| APPI (Japan)                 | 2022 amended               | 2022      | Key provisions for developers        |
+| PIPEDA (Canada)              | Federal                    | 2001+     | Key principles for developers        |
+| POPIA (South Africa)         | Act 4/2013                 | 2021      | Key sections for developers          |
 
 ---
 

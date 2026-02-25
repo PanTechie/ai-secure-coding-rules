@@ -152,6 +152,17 @@
 - Validate **deep links and IPC** inputs. Never trust data from intents or URL schemes.
 - Request **minimum permissions**. Use runtime permissions and justify each one.
 
+## Secure by Design Principles
+
+- **Ship secure by default** — Every feature launches with the most secure usable configuration. Customers should not need a hardening guide.
+- **No default passwords or admin accounts** — Force unique credential creation during initial setup.
+- **Enable MFA by default** — MFA must be available at no extra cost, enforced for admins, and strongly prompted for all users.
+- **Enable logging by default** — Security events (auth, authz, config changes) must be logged out of the box, not as a paid add-on.
+- **Eliminate entire vulnerability classes** — Prefer memory-safe languages, parameterized queries, auto-escaping frameworks, and type-safe deserialization over patching individual bugs.
+- **Publish `security.txt`** — Every web application should have `/.well-known/security.txt` with contact, VDP link, and encryption key.
+- **Generate SBOM** — Every release must produce a Software Bill of Materials (CycloneDX or SPDX).
+- **Define remediation SLAs** — Critical ≤ 7 days, High ≤ 30 days, Medium ≤ 90 days. Track compliance.
+
 ---
 
-> **Need detailed examples, audit checklists, or in-depth guidance?** Invoke the full security skill files — they contain comprehensive code examples, cross-reference tables, and framework-specific rules for each domain above.
+> **Need detailed examples, audit checklists, or in-depth guidance?** Invoke the full security skill files — they contain comprehensive code examples, cross-reference tables, and framework-specific rules for each domain above. For architecture and design reviews, start with `code-security-secure-by-design.md`.
