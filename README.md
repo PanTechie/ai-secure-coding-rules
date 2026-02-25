@@ -51,7 +51,7 @@ This way, your AI assistant automatically enforces critical security patterns in
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/ai-security-rules.git
+git clone https://github.com/PanTechie/ai-secure-coding-rules.git
 ```
 
 ### 2. Set up your AI assistant
@@ -67,11 +67,11 @@ Claude Code reads all `.md` files in `.claude/rules/` as always-on rules and sup
 ```bash
 # Step 1 — Always-on essential rules
 mkdir -p .claude/rules/
-cp ai-security-rules/security-essentials.md .claude/rules/
+cp ai-secure-coding-rules/security-essentials.md .claude/rules/
 
 # Step 2 — Detailed files as project reference (Claude reads when relevant)
 mkdir -p .claude/skills/
-cp ai-security-rules/code-security-*.md .claude/skills/
+cp ai-secure-coding-rules/code-security-*.md .claude/skills/
 ```
 
 With this setup, Claude automatically applies the essential security rules in every interaction. When you need deeper analysis, you can reference the detailed files or ask Claude to review against a specific standard.
@@ -80,8 +80,8 @@ With this setup, Claude automatically applies the essential security rules in ev
 
 ```bash
 mkdir -p .claude/rules/
-cp ai-security-rules/security-essentials.md .claude/rules/
-cp ai-security-rules/code-security-*.md .claude/rules/
+cp ai-secure-coding-rules/security-essentials.md .claude/rules/
+cp ai-secure-coding-rules/code-security-*.md .claude/rules/
 ```
 
 ---
@@ -94,7 +94,7 @@ Antigravity supports **Rules** (always-on) and **Skills** (on-demand). The recom
 
 ```bash
 mkdir -p .agent/rules/
-cp ai-security-rules/security-essentials.md .agent/rules/
+cp ai-secure-coding-rules/security-essentials.md .agent/rules/
 ```
 
 ##### Step 2 — Detailed rules (on-demand Skills)
@@ -114,7 +114,7 @@ description: >
   authentication, session management, or security headers.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-owasp-top10-2025.md .agent/skills/security-web/rules.md
+cp ai-secure-coding-rules/code-security-owasp-top10-2025.md .agent/skills/security-web/rules.md
 
 # API Security skill
 mkdir -p .agent/skills/security-api/
@@ -128,7 +128,7 @@ description: >
   authentication flows, or rate limiting.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-owasp-api-top10-2023.md .agent/skills/security-api/rules.md
+cp ai-secure-coding-rules/code-security-owasp-api-top10-2023.md .agent/skills/security-api/rules.md
 
 # LLM Security skill
 mkdir -p .agent/skills/security-llm/
@@ -141,7 +141,7 @@ description: >
   prompt engineering, RAG pipelines, or AI agent implementations.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-owasp-llm-top10-2025.md .agent/skills/security-llm/rules.md
+cp ai-secure-coding-rules/code-security-owasp-llm-top10-2025.md .agent/skills/security-llm/rules.md
 
 # ASVS Verification skill
 mkdir -p .agent/skills/security-asvs/
@@ -154,7 +154,7 @@ description: >
   or when the user mentions ASVS, security levels, or verification requirements.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-owasp-asvs-5.0.md .agent/skills/security-asvs/rules.md
+cp ai-secure-coding-rules/code-security-owasp-asvs-5.0.md .agent/skills/security-asvs/rules.md
 
 # Mobile Security skill
 mkdir -p .agent/skills/security-mobile/
@@ -167,7 +167,7 @@ description: >
   when working with Kotlin, Swift, React Native, Flutter, biometrics, or platform APIs.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-mobile.md .agent/skills/security-mobile/rules.md
+cp ai-secure-coding-rules/code-security-mobile.md .agent/skills/security-mobile/rules.md
 
 # Secrets Management skill
 mkdir -p .agent/skills/security-secrets/
@@ -180,7 +180,7 @@ description: >
   audits, configuring secret managers, or reviewing credential handling.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-secrets.md .agent/skills/security-secrets/rules.md
+cp ai-secure-coding-rules/code-security-secrets.md .agent/skills/security-secrets/rules.md
 
 # Infrastructure as Code skill
 mkdir -p .agent/skills/security-iac/
@@ -194,7 +194,7 @@ description: >
   or cloud provider configurations.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-iac.md .agent/skills/security-iac/rules.md
+cp ai-secure-coding-rules/code-security-iac.md .agent/skills/security-iac/rules.md
 
 # CWE Top 25 skill
 mkdir -p .agent/skills/security-cwe/
@@ -207,7 +207,7 @@ description: >
   the user mentions CWE, CVE, buffer overflow, or memory safety.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-cwe-top25-2025.md .agent/skills/security-cwe/rules.md
+cp ai-secure-coding-rules/code-security-cwe-top25-2025.md .agent/skills/security-cwe/rules.md
 
 # Privacy Engineering skill
 mkdir -p .agent/skills/security-privacy/
@@ -221,7 +221,7 @@ description: >
   GDPR, LGPD, CCPA, APPI, PIPEDA, POPIA, or any privacy-related feature.
 ---
 SKILLEOF
-cp ai-security-rules/code-security-privacy.md .agent/skills/security-privacy/rules.md
+cp ai-secure-coding-rules/code-security-privacy.md .agent/skills/security-privacy/rules.md
 ```
 
 ##### Resulting project structure
@@ -267,9 +267,9 @@ your-project/
 
 ```bash
 mkdir -p .cursor/rules/
-cp ai-security-rules/security-essentials.md .cursor/rules/
+cp ai-secure-coding-rules/security-essentials.md .cursor/rules/
 # Optionally, add detailed files for heavier coverage:
-# cp ai-security-rules/code-security-*.md .cursor/rules/
+# cp ai-secure-coding-rules/code-security-*.md .cursor/rules/
 ```
 
 ---
