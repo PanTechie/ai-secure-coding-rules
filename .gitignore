@@ -1,0 +1,30 @@
+# Claude Code — local session permissions and personal settings
+.claude/settings.local.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Linux
+*~
+
+# Editors — VS Code
+.vscode/
+
+# Editors — JetBrains (IntelliJ, WebStorm, etc.)
+.idea/
+
+# Editors — Vim/Neovim
+*.swp
+*.swo
+Session.vim
+
+# Editors — Emacs
+\#*\#
+.\#*
