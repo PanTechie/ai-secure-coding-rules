@@ -23,10 +23,12 @@ A curated collection of security rules and skills for AI coding assistants. The 
 
 | Tier | File | How it loads | Purpose |
 |------|------|-------------|---------|
-| **Always-on** | `security-essentials.md` | Every interaction | ~92 critical rules, lightweight |
+| **Always-on** | `security-essentials.md` | Every interaction | ~92 critical rules + Security Review Workflow |
 | **On-demand** | `code-security-*.md` | When AI deems relevant | Full rules, CVEs, code examples, checklists |
 
-The essentials file is intentionally small — it must not add significant token overhead to every interaction. The detailed skill files are loaded only when the topic is relevant.
+The essentials file is intentionally small. The detailed skill files are loaded only when the topic is relevant.
+
+**Security Review Workflow** — `security-essentials.md` also contains a standardized three-step output format for all security reviews: (1) findings table sorted by severity with false-positive flags, (2) ask which vulnerabilities to fix, (3) post-fix status table. This lives in essentials so it applies to every skill automatically. When updating essentials, always sync to all 4 platforms (`.claude/rules/`, `.agent/rules/`, `.cursor/rules/`, `AGENTS.md`).
 
 ---
 

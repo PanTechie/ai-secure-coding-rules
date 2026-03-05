@@ -165,4 +165,55 @@
 
 ---
 
+## Security Review Output Format
+
+When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this structured three-step workflow:
+
+### Step 1 — Findings Table
+
+After analyzing the code, present all findings as a table sorted by severity (Critical → High → Medium → Low → Informational). Include **all** issues found, including false positives (mark them explicitly so the user can decide):
+
+| # | Severity | Vulnerability | Location | False Positive? | Recommendation |
+|---|----------|--------------|----------|-----------------|----------------|
+| 1 | 🔴 Critical | SQL Injection | `db.js:42` | No | Use parameterized queries |
+| 2 | 🟠 High | Missing CSRF token | `routes/auth.js:15` | No | Add CSRF middleware to state-changing routes |
+| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | No | Replace with `crypto.randomBytes()` |
+| 4 | 🔵 Low | Missing `X-Content-Type-Options` header | `app.js:3` | Yes — header set by reverse proxy | No action needed |
+| 5 | ⚪ Info | Dependency `lodash@4.17.20` outdated | `package.json` | No | Run `npm update lodash` |
+
+**Severity scale:**
+- 🔴 **Critical** — exploitable with direct, severe impact (RCE, authentication bypass, data breach)
+- 🟠 **High** — significant risk requiring prompt remediation
+- 🟡 **Medium** — real issue with mitigating factors or limited exploitability
+- 🔵 **Low** — minor risk or defense-in-depth improvement
+- ⚪ **Info** — best practice, outdated dependency, or observation with no immediate risk
+
+If no vulnerabilities are found, state this explicitly: "No security issues found. The code follows secure coding practices for the patterns reviewed."
+
+### Step 2 — Ask Which to Fix
+
+After presenting the table, always ask:
+
+> "Which vulnerabilities would you like me to fix? You can say: a number or list (e.g. `1, 3`), `all`, `critical only`, `critical and high`, or `none` to skip."
+
+Do not proceed with fixes until the user responds.
+
+### Step 3 — Fix and Status Table
+
+After applying the requested fixes, present a status table showing every finding from Step 1:
+
+| # | Severity | Vulnerability | Status | How It Was Fixed |
+|---|----------|--------------|--------|-----------------|
+| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concatenation with `?` placeholder and `db.query(sql, [params])` |
+| 2 | 🟠 High | Missing CSRF token | ✅ Fixed | Added `csurf` middleware to all `POST`/`PUT`/`DELETE` routes in `app.js` |
+| 3 | 🟡 Medium | Weak PRNG | ⏳ Pending | — |
+| 4 | 🔵 Low | Missing security header | ⏭️ Skipped | False positive — set by reverse proxy |
+
+**Status values:**
+- ✅ **Fixed** — change applied; include a brief description of what changed
+- ⏳ **Pending** — not yet fixed (user did not select this item)
+- ⏭️ **Skipped** — user explicitly skipped, or confirmed as false positive
+
+---
+
 > **Need detailed examples, audit checklists, or in-depth guidance?** Invoke the full security skill files — they contain comprehensive code examples, cross-reference tables, and framework-specific rules for each domain above. For architecture and design reviews, start with `code-security-secure-by-design.md`.

@@ -165,4 +165,47 @@
 
 ---
 
+## Security Review Output Format
+
+When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this structured three-step workflow:
+
+### Step 1 — Findings Table
+
+After analyzing the code, present all findings as a table sorted by severity (Critical → High → Medium → Low → Informational). Include **all** issues found, including false positives (mark them explicitly):
+
+| # | Severity | Vulnerability | Location | False Positive? | Recommendation |
+|---|----------|--------------|----------|-----------------|----------------|
+| 1 | 🔴 Critical | SQL Injection | `db.js:42` | No | Use parameterized queries |
+| 2 | 🟠 High | Missing CSRF token | `routes/auth.js:15` | No | Add CSRF middleware |
+| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | No | Replace with `crypto.randomBytes()` |
+| 4 | 🔵 Low | Missing security header | `app.js:3` | Yes — set by reverse proxy | No action needed |
+| 5 | ⚪ Info | Outdated dependency `lodash@4.17.20` | `package.json` | No | Run `npm update lodash` |
+
+**Severity:** 🔴 Critical | 🟠 High | 🟡 Medium | 🔵 Low | ⚪ Info
+
+If no vulnerabilities are found, state this explicitly.
+
+### Step 2 — Ask Which to Fix
+
+After the table, always ask:
+
+> "Which vulnerabilities would you like me to fix? (e.g. `1, 3`, `all`, `critical only`, `critical and high`, or `none`)"
+
+Do not proceed with fixes until the user responds.
+
+### Step 3 — Fix and Status Table
+
+After applying the requested fixes, present a status table for every finding:
+
+| # | Severity | Vulnerability | Status | How It Was Fixed |
+|---|----------|--------------|--------|-----------------|
+| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concat with `?` placeholder |
+| 2 | 🟠 High | Missing CSRF token | ✅ Fixed | Added `csurf` middleware to all mutating routes |
+| 3 | 🟡 Medium | Weak PRNG | ⏳ Pending | — |
+| 4 | 🔵 Low | Missing security header | ⏭️ Skipped | False positive |
+
+**Status:** ✅ Fixed | ⏳ Pending | ⏭️ Skipped
+
+---
+
 > **Need detailed examples, audit checklists, or in-depth guidance?** See the full security files in `standards/` — they contain comprehensive code examples, cross-reference tables, and framework-specific rules for each domain above. For architecture and design reviews, start with `standards/code-security-secure-by-design.md`.
