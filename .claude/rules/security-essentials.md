@@ -165,54 +165,106 @@
 
 ---
 
-## Security Review Output Format
+## Security Review Workflow
 
-When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this structured three-step workflow:
+When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this structured four-phase workflow. The goal is **precision over volume** — every finding must be confirmed reachable and non-trivially exploitable before it is reported as a real vulnerability.
 
-### Step 1 — Findings Table
+---
 
-After analyzing the code, present all findings as a table sorted by severity (Critical → High → Medium → Low → Informational). Include **all** issues found, including false positives (mark them explicitly so the user can decide):
+### Phase 0 — Context Discovery
 
-| # | Severity | Vulnerability | Location | False Positive? | Recommendation |
-|---|----------|--------------|----------|-----------------|----------------|
-| 1 | 🔴 Critical | SQL Injection | `db.js:42` | No | Use parameterized queries |
-| 2 | 🟠 High | Missing CSRF token | `routes/auth.js:15` | No | Add CSRF middleware to state-changing routes |
-| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | No | Replace with `crypto.randomBytes()` |
-| 4 | 🔵 Low | Missing `X-Content-Type-Options` header | `app.js:3` | Yes — header set by reverse proxy | No action needed |
-| 5 | ⚪ Info | Dependency `lodash@4.17.20` outdated | `package.json` | No | Run `npm update lodash` |
+Before analyzing any code, establish the application context. This affects severity, reachability, and what counts as a false positive.
 
-**Severity scale:**
-- 🔴 **Critical** — exploitable with direct, severe impact (RCE, authentication bypass, data breach)
-- 🟠 **High** — significant risk requiring prompt remediation
-- 🟡 **Medium** — real issue with mitigating factors or limited exploitability
-- 🔵 **Low** — minor risk or defense-in-depth improvement
-- ⚪ **Info** — best practice, outdated dependency, or observation with no immediate risk
+1. **Project type and attack surface** — Web app, API, CLI, library, mobile app, serverless function? Which interfaces are exposed to untrusted input?
+2. **Technology stack and versions** — Detect language runtimes, frameworks, and library versions from `package.json`, `requirements.txt`, `go.mod`, `pom.xml`, `Gemfile`, `Cargo.toml`, `composer.json`, etc. Versions determine which CVEs apply.
+3. **Existing security controls** — Identify authentication middleware, input validation layers, ORM usage, sanitization helpers, and security headers already present. These affect exploitability.
+4. **Trust boundaries** — Map what data crosses a trust boundary: HTTP requests, file uploads, query parameters, environment variables, database results, IPC/RPC calls, queue messages, WebSocket payloads.
 
-If no vulnerabilities are found, state this explicitly: "No security issues found. The code follows secure coding practices for the patterns reviewed."
+Summarize the detected context in a brief paragraph before the findings table.
 
-### Step 2 — Ask Which to Fix
+---
 
-After presenting the table, always ask:
+### Phase 1 — Analysis Methodology
+
+Apply all four techniques during code review. A finding advances to the findings table only after passing through this filter.
+
+#### Taint Analysis
+Trace data flow from **sources** to **sinks** without adequate sanitization:
+- **Sources:** HTTP params/body/headers/cookies, URL path segments, file uploads, `process.env`, database results, external API responses, WebSocket messages, deserialized objects.
+- **Sinks:** SQL builders, shell execution functions, `eval`/`exec`/`new Function`, file path operations, HTML rendering, redirect targets, deserialization functions, log statements (for sensitive data).
+- A vulnerability is **confirmed** only when an unbroken taint path exists from a source to a sink with no sufficient validation, sanitization, or encoding in between. If the path is broken by a validated allowlist, parameterized query, or safe API, mark as false positive.
+
+#### Reachability Analysis
+Assess whether the vulnerable code path is reachable from an exposed attack surface:
+- Is the function called from an exposed endpoint, route, or public API?
+- Is the path behind authentication/authorization? (Reduces severity — exploitable only by authenticated users.)
+- Is the vulnerable branch reachable with realistic inputs, or only under impossible preconditions?
+- Downgrade unreachable findings to ⚪ **Info** or mark as false positive rather than reporting them at face value.
+
+#### Dependency Classification
+For findings involving third-party packages:
+- **Direct** — explicitly listed in the project manifest; the project imports and calls it. Full severity applies if the vulnerable API is used.
+- **Transitive** — pulled in by another dependency; not directly imported by the project. Assess whether the vulnerable function/API is actually invoked via the dependency chain in a way that affects this project. If not exercised, downgrade to ⚪ **Info** or mark as false positive.
+- Always note the dependency depth (e.g., `express → qs@6.5.2` for a transitive dep).
+
+#### Attack Path Analysis
+For Critical and High findings, assess the worst-case exploitation scenario:
+- What is the maximum impact if exploited? (RCE, auth bypass, data exfiltration, SSRF to internal network, privilege escalation, denial of service.)
+- Does exploitation require chaining with another vulnerability? If so, describe the chain.
+- Does exploitation require authenticated access, specific timing, or privileged position? These factors affect real-world risk.
+- Document the attack path briefly when it justifies the severity rating or explains why a finding is lower-risk than it appears.
+
+---
+
+### Phase 2 — Findings Table
+
+Present all confirmed and suspected findings sorted by severity (Critical → High → Medium → Low → Informational). Include false positives in the table — mark them explicitly so the user can make the final call.
+
+| # | Severity | Vulnerability | Location | Reachable | Dep Type | False Positive? | Recommendation |
+|---|----------|--------------|----------|-----------|----------|-----------------|----------------|
+| 1 | 🔴 Critical | SQL Injection | `db.js:42` | Yes — `POST /login` (unauthenticated) | N/A | No | Use parameterized queries |
+| 2 | 🟠 High | CVE-2025-13465 Prototype Pollution | `package.json` (lodash 4.17.21) | Unknown — `mergeWith()` not called directly | Transitive via `express-utils` | Yes — vulnerable API not used | No action needed |
+| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | Yes — token used as session ID | N/A | No | Replace with `crypto.randomBytes(32)` |
+| 4 | 🔵 Low | Missing `X-Content-Type-Options` | `app.js:3` | N/A — headers | N/A | Yes — set by upstream nginx | No action needed |
+| 5 | ⚪ Info | `lodash@4.17.20` outdated | `package.json` | N/A | Direct | No | `npm update lodash` |
+
+**Severity:**
+- 🔴 **Critical** — exploitable without prerequisites; direct, severe impact (RCE, auth bypass, full data breach)
+- 🟠 **High** — significant exploitable risk; may require some conditions
+- 🟡 **Medium** — real issue with mitigating factors, auth requirement, or limited blast radius
+- 🔵 **Low** — minor risk or defense-in-depth gap
+- ⚪ **Info** — best practice gap, outdated dependency, or observation with no immediate exploitability
+
+**Reachable values:** `Yes — [call path]` | `Auth-only` | `No — [reason]` | `Unknown` | `N/A`
+**Dep Type values:** `Direct` | `Transitive via [pkg]` | `N/A`
+
+If no vulnerabilities are found, state explicitly: "No security issues found. The code follows secure coding practices for the patterns reviewed."
+
+---
+
+### Phase 3 — Ask Which to Fix
+
+After the table, always ask:
 
 > "Which vulnerabilities would you like me to fix? You can say: a number or list (e.g. `1, 3`), `all`, `critical only`, `critical and high`, or `none` to skip."
 
 Do not proceed with fixes until the user responds.
 
-### Step 3 — Fix and Status Table
+---
 
-After applying the requested fixes, present a status table showing every finding from Step 1:
+### Phase 4 — Fix and Status Table
+
+After applying the requested fixes, present a status table covering every finding from Phase 2:
 
 | # | Severity | Vulnerability | Status | How It Was Fixed |
 |---|----------|--------------|--------|-----------------|
-| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concatenation with `?` placeholder and `db.query(sql, [params])` |
-| 2 | 🟠 High | Missing CSRF token | ✅ Fixed | Added `csurf` middleware to all `POST`/`PUT`/`DELETE` routes in `app.js` |
-| 3 | 🟡 Medium | Weak PRNG | ⏳ Pending | — |
-| 4 | 🔵 Low | Missing security header | ⏭️ Skipped | False positive — set by reverse proxy |
+| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concat with `?` placeholder; query now uses `db.query(sql, [username, password])` |
+| 2 | 🟠 High | CVE-2025-13465 | ⏭️ Skipped | False positive — `mergeWith()` not called by this project |
+| 3 | 🟡 Medium | Weak PRNG | ✅ Fixed | Replaced `Math.random()` with `crypto.randomBytes(32).toString('hex')` in `token.js:8` |
+| 4 | 🔵 Low | Missing header | ⏭️ Skipped | False positive — set by upstream nginx |
+| 5 | ⚪ Info | lodash outdated | ⏳ Pending | — |
 
-**Status values:**
-- ✅ **Fixed** — change applied; include a brief description of what changed
-- ⏳ **Pending** — not yet fixed (user did not select this item)
-- ⏭️ **Skipped** — user explicitly skipped, or confirmed as false positive
+**Status:** ✅ Fixed | ⏳ Pending (not yet selected) | ⏭️ Skipped (user choice or confirmed false positive)
 
 ---
 

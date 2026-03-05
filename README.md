@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,200+ security rules** across 14 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (219 lines) that enforces critical security patterns automatically, plus **13 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,200+ security rules** across 14 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **13 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -37,7 +37,7 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
 | | | **Total (detailed)** | **9,108** | **~1,220** |
 
-> **Total including essentials:** 14 files, 9,327 lines, ~1,312 rules
+> **Total including essentials:** 14 files, 9,379 lines, ~1,312 rules
 
 ---
 
@@ -47,7 +47,7 @@ These files contain comprehensive rules with code examples, framework-specific p
 
 | Tier | What | How it loads |
 | ---- | ---- | ------------ |
-| **Essential** (always-on) | `security-essentials.md` — 219 lines, ~92 rules + review workflow | Loaded on every interaction |
+| **Essential** (always-on) | `security-essentials.md` — 271 lines, ~92 rules + security review workflow | Loaded on every interaction |
 | **Skills** (on-demand) | `code-security-*.md` — full files with examples | Loaded only when relevant |
 
 > **Why two tiers?** The essentials file costs minimal context but covers ~92 critical rules that should always apply. The detailed skill files (6,466 lines total) contain code examples, cross-references, and framework-specific patterns that are most valuable during security reviews and audits, not in every interaction.
@@ -76,7 +76,7 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
 ```
 .claude/
 ├── rules/
-│   └── security-essentials.md     ← always active (219 lines)
+│   └── security-essentials.md     ← always active (271 lines)
 └── skills/
     ├── security-web/
     │   ├── SKILL.md                ← trigger: web security reviews, OWASP Top 10
@@ -132,7 +132,7 @@ cp -r .agent/ /path/to/your-project/
 ```
 .agent/
 ├── rules/
-│   └── security-essentials.md     ← always active (219 lines)
+│   └── security-essentials.md     ← always active (271 lines)
 └── skills/
     └── security-{domain}/
         ├── SKILL.md                ← trigger description
@@ -149,7 +149,7 @@ Same 13-skill structure as Claude Code.
 cp AGENTS.md /path/to/your-project/
 ```
 
-`AGENTS.md` at the project root is read by Codex as always-on instructions. It contains the full essentials ruleset (219 lines). For deeper coverage, copy individual files from `standards/` and reference them in your prompts.
+`AGENTS.md` at the project root is read by Codex as always-on instructions. It contains the full essentials ruleset (271 lines). For deeper coverage, copy individual files from `standards/` and reference them in your prompts.
 
 ---
 
@@ -169,7 +169,7 @@ cp standards/code-security-*.md /path/to/your-project/.cursor/rules/
 ```
 .cursor/
 └── rules/
-    └── security-essentials.mdc    ← always active (219 lines, alwaysApply: true)
+    └── security-essentials.mdc    ← always active (271 lines, alwaysApply: true)
 ```
 
 ---
@@ -211,7 +211,7 @@ You don't need all of them. Pick the files relevant to your project:
 ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
-│   ├── security-essentials.md          ← always-on (219 lines, ~92 rules)
+│   ├── security-essentials.md          ← always-on (271 lines, ~92 rules)
 │   └── code-security-*.md             ← 13 detailed skill files
 │
 ├── .claude/                            ← Claude Code (copy to your project)

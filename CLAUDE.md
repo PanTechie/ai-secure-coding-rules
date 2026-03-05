@@ -28,7 +28,7 @@ A curated collection of security rules and skills for AI coding assistants. The 
 
 The essentials file is intentionally small. The detailed skill files are loaded only when the topic is relevant.
 
-**Security Review Workflow** — `security-essentials.md` also contains a standardized three-step output format for all security reviews: (1) findings table sorted by severity with false-positive flags, (2) ask which vulnerabilities to fix, (3) post-fix status table. This lives in essentials so it applies to every skill automatically. When updating essentials, always sync to all 4 platforms (`.claude/rules/`, `.agent/rules/`, `.cursor/rules/`, `AGENTS.md`).
+**Security Review Workflow** — `security-essentials.md` contains a four-phase workflow for all security reviews: (0) Context Discovery (project type, stack/versions, trust boundaries, existing controls), (1) Analysis Methodology — Taint Analysis (source→sink tracing), Reachability (is vulnerable path exposed?), Dependency Classification (direct vs transitive), Attack Path Analysis (worst-case chain), (2) Findings table with `Reachable` and `Dep Type` columns alongside severity/FP/recommendation, sorted Critical→Info, (3) ask which to fix, (4) post-fix status table. Lives in essentials so it applies to every skill. When updating essentials, always sync to all 4 platforms: `.claude/rules/`, `.agent/rules/`, `.cursor/rules/`, `AGENTS.md`.
 
 ---
 

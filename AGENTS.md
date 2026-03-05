@@ -165,46 +165,76 @@
 
 ---
 
-## Security Review Output Format
+## Security Review Workflow
 
-When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this structured three-step workflow:
+When asked to perform a security review, audit, or scan of code for vulnerabilities, follow this four-phase workflow. Goal: **precision over volume** — every finding must be confirmed reachable and exploitable.
 
-### Step 1 — Findings Table
+### Phase 0 — Context Discovery
 
-After analyzing the code, present all findings as a table sorted by severity (Critical → High → Medium → Low → Informational). Include **all** issues found, including false positives (mark them explicitly):
+Before analyzing code, establish context:
+1. **Project type and attack surface** — Web app, API, CLI, library, mobile? Which interfaces accept untrusted input?
+2. **Stack and versions** — Detect runtimes, frameworks, and library versions from manifest files (`package.json`, `requirements.txt`, `go.mod`, `pom.xml`, `composer.json`, etc.). Versions determine which CVEs apply.
+3. **Existing security controls** — Auth middleware, input validation, ORM usage, sanitizers already in place affect exploitability.
+4. **Trust boundaries** — HTTP requests, file uploads, env vars, DB results, IPC/RPC, queue messages, WebSocket payloads.
 
-| # | Severity | Vulnerability | Location | False Positive? | Recommendation |
-|---|----------|--------------|----------|-----------------|----------------|
-| 1 | 🔴 Critical | SQL Injection | `db.js:42` | No | Use parameterized queries |
-| 2 | 🟠 High | Missing CSRF token | `routes/auth.js:15` | No | Add CSRF middleware |
-| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | No | Replace with `crypto.randomBytes()` |
-| 4 | 🔵 Low | Missing security header | `app.js:3` | Yes — set by reverse proxy | No action needed |
-| 5 | ⚪ Info | Outdated dependency `lodash@4.17.20` | `package.json` | No | Run `npm update lodash` |
+Summarize detected context briefly before the findings table.
+
+### Phase 1 — Analysis Methodology
+
+Apply all four techniques. A finding is reported only after this filter.
+
+**Taint Analysis** — Trace data from sources to sinks without sanitization:
+- Sources: HTTP params/body/headers/cookies, URL segments, file uploads, `process.env`, external API responses.
+- Sinks: SQL builders, shell exec, `eval`/`exec`, file path ops, HTML rendering, redirect targets, deserialization.
+- Confirmed only when an unbroken taint path exists. If broken by a validated allowlist, parameterized query, or safe API → false positive.
+
+**Reachability Analysis** — Is the vulnerable path exposed?
+- Called from a public endpoint? Behind auth? (Reduces severity.) Only reachable under impossible conditions? → Downgrade to ⚪ Info or false positive.
+
+**Dependency Classification** — For package CVEs:
+- **Direct**: listed in project manifest; full severity applies if vulnerable API is used.
+- **Transitive**: pulled by another dep; assess whether the vulnerable function is actually exercised. If not → downgrade or false positive. Note depth (e.g., `express → qs@6.5.2`).
+
+**Attack Path Analysis** — For Critical/High:
+- Worst-case impact? (RCE, auth bypass, data exfiltration, SSRF, privilege escalation.)
+- Does exploitation require chaining with another vulnerability?
+- Requires authenticated access or special conditions? → Affects severity rating.
+
+### Phase 2 — Findings Table
+
+Sorted by severity (Critical → High → Medium → Low → Info). Include false positives — mark them so the user decides.
+
+| # | Severity | Vulnerability | Location | Reachable | Dep Type | False Positive? | Recommendation |
+|---|----------|--------------|----------|-----------|----------|-----------------|----------------|
+| 1 | 🔴 Critical | SQL Injection | `db.js:42` | Yes — `POST /login` (unauth) | N/A | No | Use parameterized queries |
+| 2 | 🟠 High | CVE-2025-13465 Prototype Pollution | `package.json` (lodash 4.17.21) | Unknown — `mergeWith()` not called directly | Transitive via `express-utils` | Yes | No action needed |
+| 3 | 🟡 Medium | Weak PRNG (`Math.random`) | `token.js:8` | Yes — session ID | N/A | No | Use `crypto.randomBytes(32)` |
+| 4 | 🔵 Low | Missing `X-Content-Type-Options` | `app.js:3` | N/A | N/A | Yes — nginx sets it | No action needed |
+| 5 | ⚪ Info | `lodash@4.17.20` outdated | `package.json` | N/A | Direct | No | `npm update lodash` |
 
 **Severity:** 🔴 Critical | 🟠 High | 🟡 Medium | 🔵 Low | ⚪ Info
+**Reachable:** `Yes — [path]` | `Auth-only` | `No — [reason]` | `Unknown` | `N/A`
+**Dep Type:** `Direct` | `Transitive via [pkg]` | `N/A`
 
-If no vulnerabilities are found, state this explicitly.
+If no vulnerabilities found, state this explicitly.
 
-### Step 2 — Ask Which to Fix
-
-After the table, always ask:
+### Phase 3 — Ask Which to Fix
 
 > "Which vulnerabilities would you like me to fix? (e.g. `1, 3`, `all`, `critical only`, `critical and high`, or `none`)"
 
-Do not proceed with fixes until the user responds.
+Do not proceed until the user responds.
 
-### Step 3 — Fix and Status Table
-
-After applying the requested fixes, present a status table for every finding:
+### Phase 4 — Fix and Status Table
 
 | # | Severity | Vulnerability | Status | How It Was Fixed |
 |---|----------|--------------|--------|-----------------|
-| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concat with `?` placeholder |
-| 2 | 🟠 High | Missing CSRF token | ✅ Fixed | Added `csurf` middleware to all mutating routes |
-| 3 | 🟡 Medium | Weak PRNG | ⏳ Pending | — |
-| 4 | 🔵 Low | Missing security header | ⏭️ Skipped | False positive |
+| 1 | 🔴 Critical | SQL Injection | ✅ Fixed | Replaced string concat with `?` placeholder; `db.query(sql, [username, password])` |
+| 2 | 🟠 High | CVE-2025-13465 | ⏭️ Skipped | False positive — `mergeWith()` not used |
+| 3 | 🟡 Medium | Weak PRNG | ✅ Fixed | Replaced `Math.random()` with `crypto.randomBytes(32).toString('hex')` |
+| 4 | 🔵 Low | Missing header | ⏭️ Skipped | False positive — set by nginx |
+| 5 | ⚪ Info | lodash outdated | ⏳ Pending | — |
 
-**Status:** ✅ Fixed | ⏳ Pending | ⏭️ Skipped
+**Status:** ✅ Fixed | ⏳ Pending | ⏭️ Skipped (user choice or false positive)
 
 ---
 
