@@ -32,11 +32,11 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-cwe-top25-2025.md`](standards/code-security-cwe-top25-2025.md) | CWE Top 25:2025 (MITRE/CISA) | Code-Level Bug Patterns | 864 | ~103 |
 | [`standards/code-security-privacy.md`](standards/code-security-privacy.md) | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA | Privacy Engineering | 782 | ~120 |
 | [`standards/code-security-secure-by-design.md`](standards/code-security-secure-by-design.md) | CISA SbD Principles + Pledge + NIST SSDF | Secure by Design (SbD) | 452 | ~94 |
-| [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 803 | ~90 |
+| [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 922 | ~96 |
 | [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
-| | | **Total (detailed)** | **8,315** | **~1,114** |
+| | | **Total (detailed)** | **8,434** | **~1,120** |
 
-> **Total including essentials:** 13 files, 8,472 lines, ~1,206 rules
+> **Total including essentials:** 13 files, 8,591 lines, ~1,212 rules
 
 ---
 
@@ -108,8 +108,8 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     │   ├── SKILL.md                ← trigger: architecture, secure defaults, CISA
     │   └── rules.md                ← Secure by Design (452 lines)
     ├── security-python3/
-    │   ├── SKILL.md                ← trigger: Python 3 code, pickle, subprocess, eval
-    │   └── rules.md                ← Python 3 Security (803 lines)
+    │   ├── SKILL.md                ← trigger: Python 3 code, pickle, subprocess, eval, yaml
+    │   └── rules.md                ← Python 3 Security (922 lines)
     └── security-php/
         ├── SKILL.md                ← trigger: PHP code, SQL, XSS, unserialize, sessions
         └── rules.md                ← PHP 8.x Security (785 lines)

@@ -2,15 +2,16 @@
 name: Python 3 Security
 description: >
   Activate when writing or reviewing Python 3 code involving subprocess calls,
-  file operations, XML parsing, cryptography, deserialization (pickle/marshal),
-  eval/exec, regex, network/urllib, logging, or dependency management.
-  Also activate when the user mentions CVE, bandit, injection, or asks for
+  file operations, XML/YAML parsing, cryptography, deserialization (pickle/marshal/yaml),
+  eval/exec, regex, network/urllib, logging, zipfile/tarfile extraction, getattr with
+  user input, or dependency management.
+  Also activate when the user mentions CVE, bandit, injection, ZipSlip, or asks for
   a Python security review.
 ---
 
 ## Use this skill when
 
-Activate when writing or reviewing Python 3 code involving subprocess calls, file operations, XML parsing, cryptography, deserialization (pickle/marshal), eval/exec, regex, network/urllib, logging, or dependency management. Also activate when the user mentions CVE, bandit, injection, or asks for a Python security review.
+Activate when writing or reviewing Python 3 code involving subprocess calls, file operations, XML/YAML parsing, cryptography, deserialization (pickle/marshal/yaml), eval/exec, regex, network/urllib, logging, zipfile/tarfile extraction, getattr with user input, or dependency management. Also activate when the user mentions CVE, bandit, injection, ZipSlip, or asks for a Python security review.
 
 ## Instructions
 

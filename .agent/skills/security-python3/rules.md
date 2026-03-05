@@ -60,6 +60,37 @@ def safe_deserialize(data: bytes) -> object:
     return pickle.loads(payload)
 ```
 
+### 1.2 YAML Deserialization — yaml.load()
+
+**Vulnerability:** PyYAML's `yaml.load()` without an explicit Loader executes arbitrary Python code embedded in YAML via the `!!python/object/apply:` tag. This is a classic RCE vector widely exploited in CI/CD pipelines, config parsers, and data import features.
+
+**References:** CWE-502, CVE-2017-18342 (PyYAML RCE), Bandit B506
+
+#### Mandatory Rules
+
+- **Always use `yaml.safe_load()`** for loading untrusted or external YAML — it restricts tags to safe types only.
+- **Never use `yaml.load(data)` without an explicit `Loader`** — deprecated since PyYAML 5.1, raises a warning, and is RCE-equivalent with default Loader.
+- If full YAML features are required, use `yaml.load(data, Loader=yaml.SafeLoader)` or `yaml.CSafeLoader`.
+- Never use `Loader=yaml.Loader` or `Loader=yaml.UnsafeLoader` on untrusted data.
+- Prefer structured formats (JSON, TOML) for data interchange with external systems.
+
+```python
+import yaml
+
+# ❌ INSECURE — executes arbitrary Python code
+# Payload: "!!python/object/apply:os.system ['rm -rf /']"
+data = yaml.load(user_input)              # DeprecationWarning + RCE
+data = yaml.load(user_input, Loader=yaml.Loader)  # Explicit but still RCE
+data = yaml.load(user_input, Loader=yaml.UnsafeLoader)  # Explicit RCE
+
+# ✅ SECURE — safe_load restricts to basic YAML types (str, int, dict, list)
+data = yaml.safe_load(user_input)
+data = yaml.load(user_input, Loader=yaml.SafeLoader)  # Equivalent
+
+# ✅ SECURE — CSafeLoader for performance-sensitive paths (C extension)
+data = yaml.load(user_input, Loader=yaml.CSafeLoader)
+```
+
 ---
 
 ## 2. Code Execution — eval, exec, compile, __import__
@@ -355,6 +386,46 @@ def save_upload(file_bytes: bytes, original_name: str) -> Path:
     return dest
 ```
 
+### 6.2 zipfile — ZipSlip Path Traversal
+
+**Vulnerability:** ZIP archives can contain entries with paths like `../../etc/cron.d/backdoor`, causing `zipfile.extractall()` to write files outside the intended directory. This is known as ZipSlip and affects Python's `zipfile` module when extraction paths are not validated.
+
+**References:** CWE-22, ZipSlip advisory (Snyk 2018), CVE-2023-11811 (zipslip in various Python tools)
+
+#### Mandatory Rules
+
+- **Never call `zipfile.extractall()` without validating each member's path**.
+- Resolve each member's extraction path and verify it remains within the target directory.
+- Reject archive members with absolute paths or path traversal components (`..`).
+- Enforce a maximum member count and decompressed size to prevent zip bombs.
+
+```python
+import zipfile
+from pathlib import Path
+
+# ❌ INSECURE — ZipSlip: member "../../etc/cron.d/evil" writes outside dest
+with zipfile.ZipFile("upload.zip") as z:
+    z.extractall("/app/uploads")
+
+# ✅ SECURE — validate every member before extracting
+def safe_zip_extract(zip_path: str, dest: str, max_members: int = 1000, max_size: int = 100 * 1024 * 1024) -> None:
+    dest_path = Path(dest).resolve()
+    with zipfile.ZipFile(zip_path) as z:
+        members = z.infolist()
+        if len(members) > max_members:
+            raise ValueError(f"Archive exceeds member limit ({max_members})")
+
+        total_size = sum(m.file_size for m in members)
+        if total_size > max_size:
+            raise ValueError(f"Archive uncompressed size exceeds limit ({max_size} bytes)")
+
+        for member in members:
+            member_path = (dest_path / member.filename).resolve()
+            if not member_path.is_relative_to(dest_path):
+                raise ValueError(f"ZipSlip detected: {member.filename}")
+            z.extract(member, dest_path)
+```
+
 ---
 
 ## 7. Regular Expression — ReDoS
@@ -596,6 +667,51 @@ def load_plugin(plugin_dir: str) -> None:
     sys.path.insert(0, str(resolved))
 ```
 
+### 10.2 `getattr()` / `setattr()` with User-Controlled Input
+
+**Vulnerability:** Calling `getattr(obj, userInput)` or `setattr(obj, userInput, value)` with attacker-controlled attribute names exposes private attributes, dunder methods (`__class__`, `__globals__`, `__dict__`), and internal state. In some configurations this can be chained into RCE or privilege escalation.
+
+**References:** CWE-284, CWE-470, Python security model
+
+#### Mandatory Rules
+
+- **Never pass user-controlled strings directly to `getattr()` or `setattr()`**.
+- Use an explicit **allowlist of permitted attribute names** when dynamic attribute access is required.
+- Block access to dunder attributes (`__....__`) and private attributes (`_...`) in any allowlist.
+- Prefer a `dict`-based dispatch table over `getattr()` for routing user commands to methods.
+
+```python
+# ❌ INSECURE — exposes __globals__, __class__.__bases__, etc.
+attr_name = request.args["field"]
+value = getattr(user_obj, attr_name)  # ?field=__class__ → leaks internals
+
+# ❌ INSECURE — arbitrary attribute write
+setattr(config_obj, request.json["key"], request.json["value"])
+
+# ❌ INSECURE — dunder access leads to sandbox escape
+getattr(obj, "__class__").__bases__[0].__subclasses__()  # enumerate all classes
+
+# ✅ SECURE — allowlist of safe public attribute names
+ALLOWED_FIELDS = frozenset({"name", "email", "bio", "avatar_url"})
+
+def get_user_field(user, field: str) -> object:
+    if field not in ALLOWED_FIELDS:
+        raise AttributeError(f"Field '{field}' is not accessible")
+    return getattr(user, field)
+
+# ✅ SECURE — dispatch table instead of getattr() for commands
+COMMANDS = {
+    "start":  service.start,
+    "stop":   service.stop,
+    "status": service.status,
+}
+
+cmd = request.args.get("cmd", "")
+if cmd not in COMMANDS:
+    raise ValueError(f"Unknown command: {cmd}")
+COMMANDS[cmd]()
+```
+
 ---
 
 ## 11. Supply Chain & Dependencies
@@ -715,6 +831,7 @@ for i in range(len(password_bytes)):
 |----------|-------|-----------|
 | Deserialization | No `pickle.loads()` with untrusted data | ☐ |
 | Deserialization | No `marshal`, `shelve` with untrusted data | ☐ |
+| Deserialization | `yaml.safe_load()` used — never `yaml.load()` without SafeLoader | ☐ |
 | Code Execution | No `eval()`/`exec()` with user input | ☐ |
 | Code Execution | `ast.literal_eval()` used for config parsing | ☐ |
 | Subprocess | `shell=False` (default) on all subprocess calls | ☐ |
@@ -728,6 +845,7 @@ for i in range(len(password_bytes)):
 | File Operations | `pathlib.resolve()` + `is_relative_to()` for paths | ☐ |
 | File Operations | `tempfile.NamedTemporaryFile()` not `mktemp()` | ☐ |
 | File Operations | `tarfile` members validated before extraction | ☐ |
+| File Operations | `zipfile` members validated before extraction (ZipSlip) | ☐ |
 | ReDoS | No nested quantifiers on untrusted input | ☐ |
 | ReDoS | Input length limit before regex | ☐ |
 | Logging | Log arguments via `%s`, not f-string | ☐ |
@@ -738,6 +856,7 @@ for i in range(len(password_bytes)):
 | Language | No `assert` for security/validation checks | ☐ |
 | Language | No `sys.path` modification with untrusted paths | ☐ |
 | Language | Shared state protected with `threading.Lock()` | ☐ |
+| Language | `getattr()`/`setattr()` use allowlist for attribute names | ☐ |
 | Dependencies | All packages pinned with `==` and SHA-256 hashes | ☐ |
 | Dependencies | `pip-audit` running in CI | ☐ |
 | Dependencies | `bandit -r` running in CI | ☐ |
