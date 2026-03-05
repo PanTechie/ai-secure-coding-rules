@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,006+ security rules** across 11 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **10 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,100+ security rules** across 13 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **12 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -33,9 +33,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-privacy.md`](standards/code-security-privacy.md) | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA | Privacy Engineering | 782 | ~120 |
 | [`standards/code-security-secure-by-design.md`](standards/code-security-secure-by-design.md) | CISA SbD Principles + Pledge + NIST SSDF | Secure by Design (SbD) | 452 | ~94 |
 | [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 803 | ~90 |
-| | | **Total (detailed)** | **7,269** | **~1,004** |
+| [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
+| | | **Total (detailed)** | **8,315** | **~1,114** |
 
-> **Total including essentials:** 12 files, 7,426 lines, ~1,096 rules
+> **Total including essentials:** 13 files, 8,472 lines, ~1,206 rules
 
 ---
 
@@ -103,9 +104,15 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-privacy/
     │   ├── SKILL.md                ← trigger: GDPR, LGPD, CCPA, privacy, PII
     │   └── rules.md                ← Privacy Engineering (782 lines)
-    └── security-sbd/
-        ├── SKILL.md                ← trigger: architecture, secure defaults, CISA
-        └── rules.md                ← Secure by Design (452 lines)
+    ├── security-sbd/
+    │   ├── SKILL.md                ← trigger: architecture, secure defaults, CISA
+    │   └── rules.md                ← Secure by Design (452 lines)
+    ├── security-python3/
+    │   ├── SKILL.md                ← trigger: Python 3 code, pickle, subprocess, eval
+    │   └── rules.md                ← Python 3 Security (803 lines)
+    └── security-php/
+        ├── SKILL.md                ← trigger: PHP code, SQL, XSS, unserialize, sessions
+        └── rules.md                ← PHP 8.x Security (785 lines)
 ```
 
 ---
@@ -128,7 +135,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 10-skill structure as Claude Code.
+Same 12-skill structure as Claude Code.
 
 ---
 
@@ -183,6 +190,8 @@ You don't need all of them. Pick the files relevant to your project:
 | C/C++ native code | `security-cwe` + `security-secrets` + `security-iac` |
 | Python 3 application | `security-python3` + `security-secrets` |
 | Python 3 web/API app | `security-python3` + `security-web` + `security-api` + `security-secrets` |
+| PHP application | `security-php` + `security-secrets` |
+| PHP web/API app | `security-php` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -197,7 +206,7 @@ ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
 │   ├── security-essentials.md          ← always-on (157 lines, ~92 rules)
-│   └── code-security-*.md             ← 10 detailed skill files
+│   └── code-security-*.md             ← 12 detailed skill files
 │
 ├── .claude/                            ← Claude Code (copy to your project)
 │   ├── rules/
