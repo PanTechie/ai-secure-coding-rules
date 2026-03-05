@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,100+ security rules** across 13 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **12 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,200+ security rules** across 14 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (157 lines) that enforces critical security patterns automatically, plus **13 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -34,9 +34,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-secure-by-design.md`](standards/code-security-secure-by-design.md) | CISA SbD Principles + Pledge + NIST SSDF | Secure by Design (SbD) | 452 | ~94 |
 | [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 922 | ~96 |
 | [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
-| | | **Total (detailed)** | **8,434** | **~1,120** |
+| [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
+| | | **Total (detailed)** | **9,108** | **~1,220** |
 
-> **Total including essentials:** 13 files, 8,591 lines, ~1,212 rules
+> **Total including essentials:** 14 files, 9,265 lines, ~1,312 rules
 
 ---
 
@@ -110,9 +111,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-python3/
     │   ├── SKILL.md                ← trigger: Python 3 code, pickle, subprocess, eval, yaml
     │   └── rules.md                ← Python 3 Security (922 lines)
-    └── security-php/
-        ├── SKILL.md                ← trigger: PHP code, SQL, XSS, unserialize, sessions
-        └── rules.md                ← PHP 8.x Security (785 lines)
+    ├── security-php/
+    │   ├── SKILL.md                ← trigger: PHP code, SQL, XSS, unserialize, sessions
+    │   └── rules.md                ← PHP 8.x Security (1,046 lines)
+    └── security-javascript/
+        ├── SKILL.md                ← trigger: JS/TS code, eval, prototype pollution, DOM XSS, Node.js
+        └── rules.md                ← JavaScript & TypeScript Security (674 lines)
 ```
 
 ---
@@ -135,7 +139,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 12-skill structure as Claude Code.
+Same 13-skill structure as Claude Code.
 
 ---
 
@@ -192,6 +196,8 @@ You don't need all of them. Pick the files relevant to your project:
 | Python 3 web/API app | `security-python3` + `security-web` + `security-api` + `security-secrets` |
 | PHP application | `security-php` + `security-secrets` |
 | PHP web/API app | `security-php` + `security-web` + `security-api` + `security-secrets` |
+| JavaScript/Node.js application | `security-javascript` + `security-secrets` |
+| JavaScript/TypeScript web/API app | `security-javascript` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -206,7 +212,7 @@ ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
 │   ├── security-essentials.md          ← always-on (157 lines, ~92 rules)
-│   └── code-security-*.md             ← 12 detailed skill files
+│   └── code-security-*.md             ← 13 detailed skill files
 │
 ├── .claude/                            ← Claude Code (copy to your project)
 │   ├── rules/
