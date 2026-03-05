@@ -32,9 +32,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-cwe-top25-2025.md`](standards/code-security-cwe-top25-2025.md) | CWE Top 25:2025 (MITRE/CISA) | Code-Level Bug Patterns | 864 | ~103 |
 | [`standards/code-security-privacy.md`](standards/code-security-privacy.md) | NIST PF + GDPR/LGPD/CCPA/APPI/PIPEDA/POPIA | Privacy Engineering | 782 | ~120 |
 | [`standards/code-security-secure-by-design.md`](standards/code-security-secure-by-design.md) | CISA SbD Principles + Pledge + NIST SSDF | Secure by Design (SbD) | 452 | ~94 |
-| | | **Total (detailed)** | **6,466** | **~914** |
+| [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 803 | ~90 |
+| | | **Total (detailed)** | **7,269** | **~1,004** |
 
-> **Total including essentials:** 11 files, 6,623 lines, ~1,006 rules
+> **Total including essentials:** 12 files, 7,426 lines, ~1,096 rules
 
 ---
 
@@ -180,6 +181,8 @@ You don't need all of them. Pick the files relevant to your project:
 | A mobile app | `security-mobile` + `security-secrets` |
 | A full-stack app | `security-web` + `security-api` + `security-secrets` |
 | C/C++ native code | `security-cwe` + `security-secrets` + `security-iac` |
+| Python 3 application | `security-python3` + `security-secrets` |
+| Python 3 web/API app | `security-python3` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
