@@ -54,6 +54,31 @@ These files contain comprehensive rules with code examples, framework-specific p
 
 ---
 
+### Interactive Installer
+
+The fastest way to add security rules to any project — runs interactively, lets you pick the platforms and skills you want, and downloads only what you need.
+
+**Bash (macOS / Linux / WSL):**
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/PanTechie/ai-secure-coding-rules/main/install.sh)
+```
+
+**PowerShell (Windows / PowerShell Core):**
+
+```powershell
+& ([scriptblock]::Create((irm 'https://raw.githubusercontent.com/PanTechie/ai-secure-coding-rules/main/install.ps1')))
+```
+
+> **Note:** Use `bash <(curl ...)` — not `curl ... | bash`. The installer is interactive and needs to read from your terminal. `security-essentials.md` is always included automatically.
+
+The installer will ask you:
+1. **Destination directory** — where to install (defaults to current directory)
+2. **Platforms** — Claude Code, Gemini Antigravity, Cursor, OpenAI Codex, or all
+3. **Skills** — pick any combination of the 13 security domains (or all/none)
+
+---
+
 ### Setup by Platform
 
 This repository ships with pre-configured platform directories. **Copy the folder for your platform** to your project root.
