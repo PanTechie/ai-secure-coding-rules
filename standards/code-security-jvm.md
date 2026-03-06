@@ -1,16 +1,16 @@
-# ☕ Java Security Rules
+# ☕ Java & Kotlin (JVM) Security Rules
 
-> **Standard:** Java Language & Ecosystem Security
-> **Sources:** Oracle Java Security Advisories, NIST NVD, OWASP Java Security Cheat Sheet, CVE Details, Snyk Advisories, Spring Security Reference
+> **Standard:** Java & Kotlin JVM Backend Security
+> **Sources:** Oracle Java Security Advisories, Kotlin Security Docs, NIST NVD, OWASP Java Security Cheat Sheet, CVE Details, Snyk Advisories, Spring Security Reference
 > **Version:** 1.0.0
 > **Last updated:** March 2026
-> **Scope:** Java 11+ language, standard library, and major ecosystem components (Spring Boot, Log4j, Jackson, JDBC, JPA/Hibernate) — framework-specific rules are included where they address systemic vulnerability classes
+> **Scope:** Java 11+ and Kotlin 1.9+ on the JVM, Spring Boot, Log4j, Jackson, JDBC, JPA/Hibernate, kotlinx.serialization. Kotlin/JS and Kotlin/Native are out of scope. Android Kotlin is covered in `security-mobile`.
 
 ---
 
 ## General Instructions
 
-Apply these rules to all Java code. Java's most critical vulnerability classes arise from unsafe deserialization, JNDI injection, expression language injection, misuse of XML parsers, weak cryptographic defaults, and improper use of the JDBC API. Follow the mandatory rules and use the ✅/❌ examples as references.
+Apply these rules to all Java and Kotlin code running on the JVM. Sections 1–16 cover Java/JVM vulnerabilities that apply equally to both languages. Section 17 covers Kotlin-specific risks arising from language features not present in Java. Follow the mandatory rules and use the ✅/❌ examples as references.
 
 ---
 
@@ -824,6 +824,220 @@ HttpClient client = HttpClient.newBuilder()
 
 ---
 
+## 17. Kotlin-Specific Security Risks
+
+> **Note:** Sections 1–16 apply equally to Java and Kotlin. This section covers risks unique to Kotlin language features.
+
+### 17.1 kotlinx.serialization — @Polymorphic Deserialization
+
+**Vulnerability:** `kotlinx.serialization` with `@Polymorphic` and an open `SerializersModule` can deserialize unexpected subtypes from user-controlled input. Similar in impact to Jackson's `@JsonTypeInfo(use = Id.CLASS)`, an over-permissive module allows attacker-controlled type instantiation. `object` registered via `subclass()` may carry side effects on construction.
+
+**References:** CWE-502, kotlinx.serialization polymorphism documentation
+
+#### Mandatory Rules
+
+- **Prefer `sealed` classes** for polymorphic hierarchies — they restrict subtypes at compile time to a closed set, eliminating the open-world assumption.
+- **Never register `@Polymorphic` subtypes dynamically** based on user-supplied class names or reflection.
+- If `SerializersModule` is required, **allowlist only the specific known subtypes** — keep the module as narrow as possible.
+- Use `Json { serializersModule = strictModule }` rather than the default `Json` instance for untrusted input.
+
+```kotlin
+// ❌ INSECURE — open polymorphic hierarchy; SerializersModule may grow unbounded
+@Serializable
+@Polymorphic
+open class Animal
+
+@Serializable @SerialName("cat")
+data class Cat(val name: String) : Animal()
+
+// Attacker may inject unknown @type if more subclasses are added carelessly
+val module = SerializersModule {
+    polymorphic(Animal::class) { subclass(Cat::class) }
+}
+
+// ✅ SECURE — sealed class: exhaustive, compile-time closed set
+@Serializable
+sealed class Animal {
+    @Serializable @SerialName("cat")
+    data class Cat(val name: String) : Animal()
+
+    @Serializable @SerialName("dog")
+    data class Dog(val breed: String) : Animal()
+}
+// No SerializersModule needed — polymorphism resolved at compile time
+val json = Json { }
+val animal = json.decodeFromString<Animal>(userInput) // Only Cat or Dog possible
+```
+
+---
+
+### 17.2 data class — Sensitive Field Exposure via toString()
+
+**Vulnerability:** Kotlin `data class` auto-generates `toString()`, `equals()`, and `hashCode()` that include **all** constructor parameters. A `data class` with `password`, `token`, `apiKey`, or PII fields will expose those values in log statements, exception messages, and debug output — even if never explicitly logged.
+
+**References:** CWE-312, CWE-532, OWASP Logging Cheat Sheet
+
+#### Mandatory Rules
+
+- **Never place security-sensitive fields** (passwords, tokens, keys, SSNs, card numbers) in a `data class` constructor without explicitly overriding `toString()`.
+- **Override `toString()`** to return a redacted string for any `data class` that holds sensitive data.
+- Consider using a **`value class`** to wrap sensitive types — it allows custom `toString()` enforcement at the type level.
+- Audit all `data class` definitions for sensitive field names as part of code review.
+
+```kotlin
+// ❌ INSECURE — auto-generated toString() leaks password to every log statement
+data class UserCredentials(
+    val username: String,
+    val password: String,   // Leaked: "UserCredentials(username=alice, password=s3cr3t!)"
+    val apiKey: String      // Leaked: "apiKey=sk-prod-..."
+)
+logger.info("Processing: $credentials") // Full credential exposure
+
+// ✅ SECURE — override toString() to mask sensitive fields
+data class UserCredentials(
+    val username: String,
+    private val password: String,
+    private val apiKey: String
+) {
+    override fun toString() = "UserCredentials(username=$username, password=***, apiKey=***)"
+}
+
+// ✅ SECURE — value class enforces redaction at the type level
+@JvmInline
+value class ApiKey(private val raw: String) {
+    override fun toString() = "ApiKey(***)"
+    fun value(): String = raw // Only called explicitly in authorized code
+}
+```
+
+---
+
+### 17.3 !! Not-Null Assertion as Security Anti-Pattern
+
+**Vulnerability:** The `!!` operator throws `NullPointerException` (with an internal stack trace) instead of a controlled application error. When used on user-controlled nullable values, it can expose internal paths via error messages, bypass exception handlers that only catch `IllegalArgumentException`, and crash threads without meaningful context.
+
+**References:** CWE-476, CWE-209
+
+#### Mandatory Rules
+
+- **Never use `!!` on values derived from external input** — request parameters, deserialized fields, database results, or configuration values.
+- Use **`requireNotNull(value) { "Descriptive error" }`** for mandatory internal values — produces `IllegalArgumentException` with a controlled message.
+- Use **safe call chains (`?.`)** with explicit fallback (`?: throw ResponseStatusException(...)`) for user-facing validation.
+- Configure a global exception handler that converts `NullPointerException` to a generic 500 without stack traces.
+
+```kotlin
+// ❌ INSECURE — NullPointerException exposes stack trace if param is missing
+val userId = request.getParameter("userId")!!.toLong()
+
+// ❌ INSECURE — ClassCastException bypasses type-safe validation
+val token = session.getAttribute("auth_token") as String // Crashes with full trace
+
+// ✅ SECURE — controlled validation with informative ApplicationException
+val userId = request.getParameter("userId")
+    ?.toLongOrNull()
+    ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "userId is required")
+
+// ✅ SECURE — safe cast with explicit error
+val token = session.getAttribute("auth_token") as? String
+    ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Session invalid")
+```
+
+---
+
+### 17.4 Coroutines and Spring Security Context Propagation
+
+**Vulnerability:** Spring Security stores authentication in `ThreadLocal`. Kotlin coroutines suspend and resume on different threads, silently losing the `ThreadLocal` context. Code that reads `SecurityContextHolder.getContext()` after a `suspend` point may receive an empty or wrong context — enabling privilege confusion or silent authorization bypasses that are very hard to reproduce in testing.
+
+**References:** CWE-362, Spring Security reference: Coroutine Support
+
+#### Mandatory Rules
+
+- **Add `kotlinx-coroutines-reactor`** to the classpath — Spring Boot's `WebFlux` + this library propagates the `ReactorContext` (including Security) across coroutine suspensions automatically.
+- **Prefer `@PreAuthorize` / `@PostAuthorize` AOP annotations** for authorization — they run before/after the suspend point, not within it.
+- **Inject `@AuthenticationPrincipal`** as a method parameter — Spring resolves it before coroutine execution starts, making it safe to use inside suspended code.
+- **Never read `SecurityContextHolder.getContext()` inside a `withContext(Dispatchers.IO)` block** without explicit context passing.
+
+```kotlin
+// ❌ INSECURE — SecurityContextHolder returns null/wrong context after suspension
+@GetMapping("/data")
+suspend fun getData(): ResponseEntity<Data> {
+    val data = withContext(Dispatchers.IO) { repo.findData() }
+    // Thread changed after suspension — context may be null
+    val user = SecurityContextHolder.getContext().authentication?.name
+        ?: throw AccessDeniedException("Not authenticated") // May fail spuriously
+    return ResponseEntity.ok(data.filter { it.owner == user })
+}
+
+// ✅ SECURE — inject principal before suspension; use @PreAuthorize
+@GetMapping("/data")
+@PreAuthorize("isAuthenticated()") // Evaluated before coroutine starts
+suspend fun getData(
+    @AuthenticationPrincipal principal: UserDetails // Resolved before suspension
+): ResponseEntity<Data> {
+    val data = withContext(Dispatchers.IO) {
+        repo.findDataForUser(principal.username) // Safe: principal captured before suspend
+    }
+    return ResponseEntity.ok(data)
+}
+
+// build.gradle.kts — required for automatic context propagation
+// implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.8.0")
+```
+
+---
+
+### 17.5 object Singleton — Mutable Shared State
+
+**Vulnerability:** Kotlin `object` declarations are JVM singletons. Mutable state stored in an `object` (collections, flags, counters) is shared across all requests and threads. Race conditions on security-relevant state — a blocklist, a rate-limit counter, an active-session set — can allow bypasses if not properly synchronized.
+
+**References:** CWE-362, CWE-667
+
+#### Mandatory Rules
+
+- **Never store mutable, security-relevant state** (blocklists, rate-limit counters, active tokens) in a plain `object` without thread-safe data structures.
+- Use `ConcurrentHashMap`, `AtomicLong`, or `AtomicReference` for shared counters and maps in `object` singletons.
+- Prefer **Spring-managed beans** (singleton scope by default) over `object` declarations — Spring's dependency injection integrates with lifecycle and testing, making state easier to reset and audit.
+
+```kotlin
+// ❌ INSECURE — mutableSetOf is not thread-safe; race condition bypasses blocklist
+object TokenBlocklist {
+    private val blocked = mutableSetOf<String>()  // Not thread-safe
+    fun block(token: String) { blocked.add(token) }
+    fun isBlocked(token: String) = token in blocked // Race: token may appear between add and check
+}
+
+// ✅ SECURE — ConcurrentHashMap.newKeySet() is thread-safe
+object TokenBlocklist {
+    private val blocked: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    fun block(token: String) { blocked.add(token) }
+    fun isBlocked(token: String): Boolean = blocked.contains(token)
+}
+
+// ✅ SECURE (preferred) — Spring singleton bean, injectable and testable
+@Service
+class TokenBlocklistService {
+    private val blocked: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    fun block(token: String) { blocked.add(token) }
+    fun isBlocked(token: String): Boolean = blocked.contains(token)
+}
+```
+
+---
+
+### Kotlin Checklist
+
+- [ ] Polymorphic hierarchies in `kotlinx.serialization` use `sealed` classes (not open + `@Polymorphic`)
+- [ ] No `SerializersModule` that registers subtypes based on user-controlled input
+- [ ] All `data class` types with sensitive fields override `toString()` to redact them
+- [ ] No `!!` on values derived from external input — use `requireNotNull()` or safe calls
+- [ ] `kotlinx-coroutines-reactor` in classpath for Spring WebFlux + Security propagation
+- [ ] Authorization checked via `@PreAuthorize` or `@AuthenticationPrincipal`, not `SecurityContextHolder` after suspension
+- [ ] Mutable state in `object` singletons uses thread-safe data structures (`ConcurrentHashMap`, `Atomic*`)
+- [ ] Gradle Kotlin DSL does not use dynamic version strings (`+`, `latest.release`)
+- [ ] Version Catalog (`libs.versions.toml`) used for centralized version management
+
+---
+
 ## CVE Reference Table
 
 | CVE | Severity | Component | Description | Fixed In |
@@ -926,7 +1140,9 @@ HttpClient client = HttpClient.newBuilder()
 | [ysoserial](https://github.com/frohoff/ysoserial) | Gadget chain generator for testing deserialization | `java -jar ysoserial.jar CommonsCollections1 "id"` |
 | [JVM serial filter tester](https://openjdk.org/jeps/290) | Verify `ObjectInputFilter` configuration | Manual or JUnit-based test |
 | [mvn-versions-plugin](https://www.mojohaus.org/versions-maven-plugin/) | Find outdated Maven dependencies | `mvn versions:display-dependency-updates` |
+| [detekt](https://detekt.dev/) | Kotlin static analysis with security rules | `./gradlew detekt` |
+| [Semgrep Kotlin rules](https://semgrep.dev/r#kotlin) | Kotlin-specific security pattern analysis | `semgrep --config "p/kotlin"` |
 
 ---
 
-*Released under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Based on Oracle Java Security Advisories, OWASP Java Security Cheat Sheet, Spring Security Reference, and NIST/MITRE vulnerability data.*
+*Released under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Based on Oracle Java Security Advisories, Kotlin Security Docs, OWASP Java Security Cheat Sheet, Spring Security Reference, and NIST/MITRE vulnerability data.*
