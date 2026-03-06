@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,300+ security rules** across 15 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **14 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,400+ security rules** across 16 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **15 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -36,9 +36,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
 | [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
 | [`standards/code-security-csharp.md`](standards/code-security-csharp.md) | Microsoft Security Advisories + NIST NVD + OWASP | C# / .NET 6+ & ASP.NET Core | 941 | ~105 |
-| | | **Total (detailed)** | **10,049** | **~1,325** |
+| [`standards/code-security-java.md`](standards/code-security-java.md) | Oracle Java Security Advisories + NIST NVD + Spring Security | Java 11+ & Spring Boot | 932 | ~110 |
+| | | **Total (detailed)** | **10,981** | **~1,435** |
 
-> **Total including essentials:** 15 files, 10,320 lines, ~1,417 rules
+> **Total including essentials:** 16 files, 11,252 lines, ~1,527 rules
 
 ---
 
@@ -143,9 +144,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-javascript/
     │   ├── SKILL.md                ← trigger: JS/TS code, eval, prototype pollution, DOM XSS, Node.js
     │   └── rules.md                ← JavaScript & TypeScript Security (674 lines)
-    └── security-csharp/
-        ├── SKILL.md                ← trigger: C#/.NET code, BinaryFormatter, SqlCommand, XmlDocument, ASP.NET Core
-        └── rules.md                ← C# / .NET Security (941 lines)
+    ├── security-csharp/
+    │   ├── SKILL.md                ← trigger: C#/.NET code, BinaryFormatter, SqlCommand, XmlDocument, ASP.NET Core
+    │   └── rules.md                ← C# / .NET Security (941 lines)
+    └── security-java/
+        ├── SKILL.md                ← trigger: Java code, ObjectInputStream, JNDI, SpEL, Log4Shell, Spring Security
+        └── rules.md                ← Java & Spring Boot Security (932 lines)
 ```
 
 ---
@@ -168,7 +172,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 14-skill structure as Claude Code.
+Same 15-skill structure as Claude Code.
 
 ---
 
@@ -229,6 +233,8 @@ You don't need all of them. Pick the files relevant to your project:
 | JavaScript/TypeScript web/API app | `security-javascript` + `security-web` + `security-api` + `security-secrets` |
 | C# / .NET application | `security-csharp` + `security-secrets` |
 | C# / ASP.NET Core web/API app | `security-csharp` + `security-web` + `security-api` + `security-secrets` |
+| Java application | `security-java` + `security-secrets` |
+| Java / Spring Boot web/API app | `security-java` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -243,7 +249,7 @@ ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
 │   ├── security-essentials.md          ← always-on (271 lines, ~92 rules)
-│   └── code-security-*.md             ← 14 detailed skill files
+│   └── code-security-*.md             ← 15 detailed skill files
 │
 ├── .claude/                            ← Claude Code (copy to your project)
 │   ├── rules/
@@ -312,6 +318,10 @@ Unified privacy-as-code guide with configurable `TARGET_REGULATIONS` selector. C
 ### Secure by Design (SbD)
 
 Translates CISA's Secure by Design philosophy into actionable development rules. Covers the **3 CISA Principles**, all **7 CISA Pledge Goals**, and the **NIST SSDF SP 800-218** lifecycle practices. Includes: secure defaults checklist, `security.txt` template, MFA enforcement patterns, SBOM generation, remediation SLAs, and a 25-point architecture review checklist.
+
+### Java Security
+
+Comprehensive security rules for Java 11+ and Spring Boot applications. Covers 16 vulnerability classes including Java native deserialization gadget chains via `ObjectInputStream` (JEP 290 filter), `XMLDecoder`, XStream security framework, Jackson polymorphic typing (`@JsonTypeInfo(use=Id.CLASS)`), JNDI injection and Log4Shell (CVE-2021-44228 CVSS 10.0), SpEL injection (Spring4Shell CVE-2022-22965, Spring Cloud CVE-2022-22963/22947), SQL injection in JDBC/JPA/Hibernate, XXE in `DocumentBuilderFactory`/`SAXParserFactory`/`XMLInputFactory`, command injection via `Runtime.exec()`, AES-GCM vs DES/ECB/MD5, path traversal with `Paths.get()`, LDAP injection, SSRF via `HttpURLConnection`, Spring Security misconfiguration (CSRF, session fixation, actuator exposure), mass assignment (Spring4Shell), ReDoS, log injection, and Maven/Gradle supply chain. Includes 12 real CVEs (CVSS 7.5–10.0, 2019–2023) with full descriptions, a 45-item security checklist, and a tooling table with SpotBugs + FindSecBugs, Semgrep, and OWASP Dependency-Check.
 
 ### C# / .NET Security
 
