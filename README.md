@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,400+ security rules** across 16 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **15 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,500+ security rules** across 17 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **16 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -37,9 +37,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
 | [`standards/code-security-csharp.md`](standards/code-security-csharp.md) | Microsoft Security Advisories + NIST NVD + OWASP | C# / .NET 6+ & ASP.NET Core | 941 | ~105 |
 | [`standards/code-security-jvm.md`](standards/code-security-jvm.md) | Oracle Java Security Advisories + Kotlin Security Docs + NIST NVD + Spring Security | Java 11+ & Kotlin 1.9+ on the JVM, Spring Boot | 1,148 | ~125 |
-| | | **Total (detailed)** | **11,197** | **~1,450** |
+| [`standards/code-security-clojure.md`](standards/code-security-clojure.md) | Clojure Security Advisories + NIST NVD + OWASP Injection Prevention + Ring/Leiningen Security | Clojure 1.11+ on the JVM, Ring/Compojure, next.jdbc | 542 | ~60 |
+| | | **Total (detailed)** | **11,739** | **~1,510** |
 
-> **Total including essentials:** 16 files, 11,468 lines, ~1,542 rules
+> **Total including essentials:** 17 files, 12,010 lines, ~1,602 rules
 
 ---
 
@@ -147,9 +148,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-csharp/
     │   ├── SKILL.md                ← trigger: C#/.NET code, BinaryFormatter, SqlCommand, XmlDocument, ASP.NET Core
     │   └── rules.md                ← C# / .NET Security (941 lines)
-    └── security-jvm/
-        ├── SKILL.md                ← trigger: Java/Kotlin code, ObjectInputStream, JNDI, SpEL, Log4Shell, coroutines
-        └── rules.md                ← Java & Kotlin JVM Security (1,148 lines)
+    ├── security-jvm/
+    │   ├── SKILL.md                ← trigger: Java/Kotlin code, ObjectInputStream, JNDI, SpEL, Log4Shell, coroutines
+    │   └── rules.md                ← Java & Kotlin JVM Security (1,148 lines)
+    └── security-clojure/
+        ├── SKILL.md                ← trigger: Clojure code, eval, read-string, nREPL, Ring, next.jdbc, nippy
+        └── rules.md                ← Clojure Security (542 lines)
 ```
 
 ---
@@ -172,7 +176,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 15-skill structure as Claude Code.
+Same 16-skill structure as Claude Code.
 
 ---
 
@@ -235,6 +239,8 @@ You don't need all of them. Pick the files relevant to your project:
 | C# / ASP.NET Core web/API app | `security-csharp` + `security-web` + `security-api` + `security-secrets` |
 | Java or Kotlin application | `security-jvm` + `security-secrets` |
 | Java or Kotlin / Spring Boot web/API app | `security-jvm` + `security-web` + `security-api` + `security-secrets` |
+| Clojure application | `security-clojure` + `security-jvm` + `security-secrets` |
+| Clojure web/API app (Ring/Compojure) | `security-clojure` + `security-jvm` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -249,7 +255,7 @@ ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
 │   ├── security-essentials.md          ← always-on (271 lines, ~92 rules)
-│   └── code-security-*.md             ← 15 detailed skill files (jvm covers Java + Kotlin)
+│   └── code-security-*.md             ← 16 detailed skill files (jvm covers Java + Kotlin)
 │
 ├── .claude/                            ← Claude Code (copy to your project)
 │   ├── rules/
@@ -326,6 +332,10 @@ Unified security rules for Java 11+ and Kotlin 1.9+ on the JVM, covering Spring 
 ### C# / .NET Security
 
 Comprehensive security rules for C# and .NET 6+ applications. Covers 17 vulnerability classes including `BinaryFormatter`/`SoapFormatter` deserialization gadget chains, Newtonsoft.Json `TypeNameHandling` RCE, `DataSet.ReadXml()` (CVE-2020-1147), SQL injection via `FromSqlRaw`, XXE in `XmlDocument`, command injection via `Process.Start`, cryptographic misuse (AES-GCM vs ECB/MD5/DES), path traversal with `Path.Combine`, LDAP injection, ReDoS in `System.Text.RegularExpressions`, TLS bypass in `HttpClient`, SSRF, ASP.NET Core CORS/CSRF/session security, unsafe code / `stackalloc` buffer overflows, open redirect, sensitive data in logs (CVE-2021-34532), and NuGet supply chain. Includes 12 real CVEs (CVSS 5.5–9.8, 2020–2024), a 40-item security checklist, and a tooling table with Roslyn analyzers, Semgrep, and BinSkim.
+
+### Clojure Security
+
+Security rules for Clojure 1.11+ on the JVM, covering the Ring/Compojure web stack and next.jdbc. The most critical Clojure-specific risk is code execution via `eval` and `clojure.core/read-string` — this file explains why `clojure.edn/read-string` must be used instead for all external data. Additional sections cover: nREPL/REPL exposure (bind to `127.0.0.1`, disabled in production), EDN and Transit deserialization (including nippy `thaw` with password and length check), SQL injection via `next.jdbc` parameterized vectors, Ring middleware security (`wrap-defaults`, `ring.middleware.anti-forgery`, session fixation prevention), OS command injection via `clojure.java.shell/sh`, path traversal via `clojure.java.io`, cryptography via Java interop (buddy-hashers, SecureRandom, AES-GCM), sensitive data in timbre logs (redaction middleware), and Leiningen/deps.edn supply chain (lein-nvd, clj-watson). Includes a Java Interop Security Note pointing to `security-jvm` for ObjectInputStream, JNDI, XXE, and Log4j risks. Contains 5 real CVEs, a 35-item security checklist, and tooling including clj-holmes, eastwood, and Semgrep Clojure rules.
 
 ---
 
