@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,200+ security rules** across 14 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **13 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,300+ security rules** across 15 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **14 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -35,9 +35,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-python3.md`](standards/code-security-python3.md) | Python Security Advisories + NIST NVD + OWASP | Python 3 & Standard Library | 922 | ~96 |
 | [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
 | [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
-| | | **Total (detailed)** | **9,108** | **~1,220** |
+| [`standards/code-security-csharp.md`](standards/code-security-csharp.md) | Microsoft Security Advisories + NIST NVD + OWASP | C# / .NET 6+ & ASP.NET Core | 941 | ~105 |
+| | | **Total (detailed)** | **10,049** | **~1,325** |
 
-> **Total including essentials:** 14 files, 9,379 lines, ~1,312 rules
+> **Total including essentials:** 15 files, 10,320 lines, ~1,417 rules
 
 ---
 
@@ -139,9 +140,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-php/
     │   ├── SKILL.md                ← trigger: PHP code, SQL, XSS, unserialize, sessions
     │   └── rules.md                ← PHP 8.x Security (1,046 lines)
-    └── security-javascript/
-        ├── SKILL.md                ← trigger: JS/TS code, eval, prototype pollution, DOM XSS, Node.js
-        └── rules.md                ← JavaScript & TypeScript Security (674 lines)
+    ├── security-javascript/
+    │   ├── SKILL.md                ← trigger: JS/TS code, eval, prototype pollution, DOM XSS, Node.js
+    │   └── rules.md                ← JavaScript & TypeScript Security (674 lines)
+    └── security-csharp/
+        ├── SKILL.md                ← trigger: C#/.NET code, BinaryFormatter, SqlCommand, XmlDocument, ASP.NET Core
+        └── rules.md                ← C# / .NET Security (941 lines)
 ```
 
 ---
@@ -164,7 +168,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 13-skill structure as Claude Code.
+Same 14-skill structure as Claude Code.
 
 ---
 
@@ -223,6 +227,8 @@ You don't need all of them. Pick the files relevant to your project:
 | PHP web/API app | `security-php` + `security-web` + `security-api` + `security-secrets` |
 | JavaScript/Node.js application | `security-javascript` + `security-secrets` |
 | JavaScript/TypeScript web/API app | `security-javascript` + `security-web` + `security-api` + `security-secrets` |
+| C# / .NET application | `security-csharp` + `security-secrets` |
+| C# / ASP.NET Core web/API app | `security-csharp` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -237,7 +243,7 @@ ai-secure-coding-rules/
 │
 ├── standards/                          ← canonical source files
 │   ├── security-essentials.md          ← always-on (271 lines, ~92 rules)
-│   └── code-security-*.md             ← 13 detailed skill files
+│   └── code-security-*.md             ← 14 detailed skill files
 │
 ├── .claude/                            ← Claude Code (copy to your project)
 │   ├── rules/
@@ -306,6 +312,10 @@ Unified privacy-as-code guide with configurable `TARGET_REGULATIONS` selector. C
 ### Secure by Design (SbD)
 
 Translates CISA's Secure by Design philosophy into actionable development rules. Covers the **3 CISA Principles**, all **7 CISA Pledge Goals**, and the **NIST SSDF SP 800-218** lifecycle practices. Includes: secure defaults checklist, `security.txt` template, MFA enforcement patterns, SBOM generation, remediation SLAs, and a 25-point architecture review checklist.
+
+### C# / .NET Security
+
+Comprehensive security rules for C# and .NET 6+ applications. Covers 17 vulnerability classes including `BinaryFormatter`/`SoapFormatter` deserialization gadget chains, Newtonsoft.Json `TypeNameHandling` RCE, `DataSet.ReadXml()` (CVE-2020-1147), SQL injection via `FromSqlRaw`, XXE in `XmlDocument`, command injection via `Process.Start`, cryptographic misuse (AES-GCM vs ECB/MD5/DES), path traversal with `Path.Combine`, LDAP injection, ReDoS in `System.Text.RegularExpressions`, TLS bypass in `HttpClient`, SSRF, ASP.NET Core CORS/CSRF/session security, unsafe code / `stackalloc` buffer overflows, open redirect, sensitive data in logs (CVE-2021-34532), and NuGet supply chain. Includes 12 real CVEs (CVSS 5.5–9.8, 2020–2024), a 40-item security checklist, and a tooling table with Roslyn analyzers, Semgrep, and BinSkim.
 
 ---
 
