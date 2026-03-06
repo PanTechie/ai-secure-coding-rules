@@ -9,7 +9,8 @@ description: >
   (path traversal), DirContext/LDAP, URL/HttpURLConnection/HttpClient (SSRF/TLS), HttpSecurity/Spring
   Security configuration, @ModelAttribute/data binding, Pattern/regex on user input, Log4j/SLF4J
   logging, Maven/Gradle dependency management, kotlinx.serialization/@Polymorphic, Kotlin data class
-  with sensitive fields, !! operator, coroutines with Spring Security, or Kotlin object singletons.
+  with sensitive fields, !! operator, coroutines with Spring Security, Kotlin object singletons,
+  ScriptEngineManager/kotlin-scripting-jsr223, or kotlin-reflect.
   Also activate when the user mentions Log4Shell, Spring4Shell, Text4Shell, gadget chain, CVE,
   deserialization, XXE, SSRF, SpEL injection, or asks for a Java or Kotlin security review.
 allowed-tools: Read

@@ -1024,6 +1024,50 @@ class TokenBlocklistService {
 
 ---
 
+### 17.6 Kotlin Scripting API and kotlin-reflect
+
+**Vulnerability:** Two dependency-level risks that are easy to overlook:
+
+1. **Kotlin Scripting** (`kotlin-scripting-jsr223`, `kotlin-script-util`, `javax.script.ScriptEngine` with Kotlin engine): executes arbitrary `.kts` source code at runtime — a direct equivalent of `eval`. Any path that compiles and runs a user-supplied string has full JVM permissions.
+
+2. **`kotlin-reflect`**: required by many serialization and DI frameworks (Jackson Kotlin module, kotlinx.serialization with polymorphism, Koin, etc.). It exposes private fields and constructors via reflection, widens the attack surface for deserialization gadget chains, and significantly increases JAR size and startup time. Its presence should be intentional and audited.
+
+**References:** CWE-94, CWE-470, JSR-223
+
+#### Mandatory Rules
+
+- **Never compile or evaluate Kotlin source strings from user input** — `ScriptEngineManager().getEngineByExtension("kts")?.eval(userInput)` is RCE.
+- If a scripting engine is required for a legitimate feature, run it in a **sandboxed child process** with a strict `SecurityManager` profile and no access to application credentials.
+- **Audit `kotlin-reflect` as a direct dependency** — add it only when required; do not inherit it silently as a transitive dependency without review.
+- When `kotlin-reflect` is present, ensure that Jackson's `KotlinModule` is configured with `strictNullChecks = true` to prevent null injection into non-nullable fields.
+
+```kotlin
+// ❌ INSECURE — evaluates arbitrary Kotlin code from user input
+val engine = ScriptEngineManager().getEngineByExtension("kts")
+engine?.eval(request.getParameter("script")) // RCE
+
+// ✅ SECURE — allowlist of named operations; no dynamic compilation
+val ops = mapOf(
+    "summarize" to ::summarize,
+    "validate" to ::validate
+)
+val op = request.getParameter("op")
+    ?.let { ops[it] }
+    ?: throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unknown operation")
+op(payload)
+
+// build.gradle.kts — audit: is kotlin-reflect actually required?
+// dependencies {
+//     implementation("org.jetbrains.kotlin:kotlin-reflect") // Required by Jackson KotlinModule
+// }
+// If Jackson KotlinModule is the only consumer, configure it explicitly:
+// val mapper = jacksonObjectMapper().apply {
+//     registerModule(KotlinModule.Builder().strictNullChecks(true).build())
+// }
+```
+
+---
+
 ### Kotlin Checklist
 
 - [ ] Polymorphic hierarchies in `kotlinx.serialization` use `sealed` classes (not open + `@Polymorphic`)
@@ -1033,6 +1077,8 @@ class TokenBlocklistService {
 - [ ] `kotlinx-coroutines-reactor` in classpath for Spring WebFlux + Security propagation
 - [ ] Authorization checked via `@PreAuthorize` or `@AuthenticationPrincipal`, not `SecurityContextHolder` after suspension
 - [ ] Mutable state in `object` singletons uses thread-safe data structures (`ConcurrentHashMap`, `Atomic*`)
+- [ ] Kotlin Scripting engine (`ScriptEngineManager`, `kotlin-scripting-jsr223`) not called with user-supplied strings
+- [ ] `kotlin-reflect` dependency audited — present only when required; `KotlinModule` configured with `strictNullChecks = true`
 - [ ] Gradle Kotlin DSL does not use dynamic version strings (`+`, `latest.release`)
 - [ ] Version Catalog (`libs.versions.toml`) used for centralized version management
 

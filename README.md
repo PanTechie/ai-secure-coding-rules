@@ -36,11 +36,11 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-php.md`](standards/code-security-php.md) | PHP Security Advisories + NIST NVD + OWASP | PHP 8.x & Standard Extensions | 1,046 | ~110 |
 | [`standards/code-security-javascript.md`](standards/code-security-javascript.md) | Node.js Security WG + OWASP + NVD/CVE + Snyk | JavaScript, TypeScript & Node.js 18+ | 674 | ~100 |
 | [`standards/code-security-csharp.md`](standards/code-security-csharp.md) | Microsoft Security Advisories + NIST NVD + OWASP | C# / .NET 6+ & ASP.NET Core | 941 | ~105 |
-| [`standards/code-security-jvm.md`](standards/code-security-jvm.md) | Oracle Java Security Advisories + Kotlin Security Docs + NIST NVD + Spring Security | Java 11+ & Kotlin 1.9+ on the JVM, Spring Boot | 1,148 | ~125 |
+| [`standards/code-security-jvm.md`](standards/code-security-jvm.md) | Oracle Java Security Advisories + Kotlin Security Docs + NIST NVD + Spring Security | Java 11+ & Kotlin 1.9+ on the JVM, Spring Boot | 1,194 | ~127 |
 | [`standards/code-security-clojure.md`](standards/code-security-clojure.md) | Clojure Security Advisories + NIST NVD + OWASP Injection Prevention + Ring/Leiningen Security | Clojure 1.11+ on the JVM, Ring/Compojure, next.jdbc | 542 | ~60 |
-| | | **Total (detailed)** | **11,739** | **~1,510** |
+| | | **Total (detailed)** | **11,785** | **~1,512** |
 
-> **Total including essentials:** 17 files, 12,010 lines, ~1,602 rules
+> **Total including essentials:** 17 files, 12,056 lines, ~1,604 rules
 
 ---
 
@@ -327,7 +327,7 @@ Translates CISA's Secure by Design philosophy into actionable development rules.
 
 ### Java & Kotlin (JVM) Security
 
-Unified security rules for Java 11+ and Kotlin 1.9+ on the JVM, covering Spring Boot backends. Sections 1–16 cover JVM-level vulnerabilities applicable to both languages: native deserialization gadget chains via `ObjectInputStream` (JEP 290 filter), `XMLDecoder`, XStream security framework, Jackson polymorphic typing, JNDI injection and Log4Shell (CVE-2021-44228 CVSS 10.0), SpEL injection (Spring4Shell CVE-2022-22965, Spring Cloud CVE-2022-22963/22947), SQL injection in JDBC/JPA/Hibernate, XXE in `DocumentBuilderFactory`/`SAXParserFactory`/`XMLInputFactory`, command injection via `Runtime.exec()`, AES-GCM vs DES/ECB/MD5, path traversal, LDAP injection, SSRF, Spring Security misconfiguration, mass assignment, ReDoS, log injection, and Maven/Gradle supply chain. Section 17 covers Kotlin-specific risks: `kotlinx.serialization` `@Polymorphic` deserialization, `data class` sensitive field leakage via auto-generated `toString()`, `!!` operator as security anti-pattern, coroutine + Spring Security context loss, and `object` singleton race conditions. Includes 12 real CVEs (CVSS 7.5–10.0, 2019–2023), a 54-item checklist (Java + Kotlin), and tooling including SpotBugs + FindSecBugs, detekt, Semgrep, and OWASP Dependency-Check.
+Unified security rules for Java 11+ and Kotlin 1.9+ on the JVM, covering Spring Boot backends. Sections 1–16 cover JVM-level vulnerabilities applicable to both languages: native deserialization gadget chains via `ObjectInputStream` (JEP 290 filter), `XMLDecoder`, XStream security framework, Jackson polymorphic typing, JNDI injection and Log4Shell (CVE-2021-44228 CVSS 10.0), SpEL injection (Spring4Shell CVE-2022-22965, Spring Cloud CVE-2022-22963/22947), SQL injection in JDBC/JPA/Hibernate, XXE in `DocumentBuilderFactory`/`SAXParserFactory`/`XMLInputFactory`, command injection via `Runtime.exec()`, AES-GCM vs DES/ECB/MD5, path traversal, LDAP injection, SSRF, Spring Security misconfiguration, mass assignment, ReDoS, log injection, and Maven/Gradle supply chain. Section 17 covers Kotlin-specific risks: `kotlinx.serialization` `@Polymorphic` deserialization, `data class` sensitive field leakage via auto-generated `toString()`, `!!` operator as security anti-pattern, coroutine + Spring Security context loss, `object` singleton race conditions, and Kotlin Scripting API (`ScriptEngineManager`/`kotlin-scripting-jsr223`) as an `eval`-equivalent RCE vector plus `kotlin-reflect` dependency auditing. Includes 12 real CVEs (CVSS 7.5–10.0, 2019–2023), a 56-item checklist (Java + Kotlin), and tooling including SpotBugs + FindSecBugs, detekt, Semgrep, and OWASP Dependency-Check.
 
 ### C# / .NET Security
 
