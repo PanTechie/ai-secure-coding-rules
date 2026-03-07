@@ -166,4 +166,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-c-cpp.md',
     detail: 'gets/strcpy, use-after-free, format string, TOCTOU, AddressSanitizer, compiler hardening',
   },
+  {
+    key: 'security-dart',
+    label: 'Dart & Flutter Security',
+    stdFile: 'code-security-dart.md',
+    detail: 'Random.secure(), SharedPreferences, badCertificateCallback, sqflite SQLi, dart:ffi, MobSF',
+  },
 ];

@@ -56,6 +56,7 @@ SKILLS=(
   "security-ruby|Ruby & Rails Security|code-security-ruby.md"
   "security-elixir|Elixir & Phoenix Security|code-security-elixir.md"
   "security-c-cpp|C / C++ Security|code-security-c-cpp.md"
+  "security-dart|Dart & Flutter Security|code-security-dart.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

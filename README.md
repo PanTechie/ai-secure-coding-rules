@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,500+ security rules** across 17 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **16 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,600+ security rules** across 18 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **17 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -41,9 +41,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-ruby.md`](standards/code-security-ruby.md) | Ruby Security Advisories + Rails Security Guide + OWASP + NIST NVD + Snyk Ruby DB | Ruby 3.x & Ruby on Rails 7.x, Sinatra, Devise, Nokogiri | 704 | ~115 |
 | [`standards/code-security-elixir.md`](standards/code-security-elixir.md) | Elixir Security Advisories + Erlang/OTP Advisories + NIST NVD + Sobelow + OWASP | Elixir 1.15+ & Phoenix 1.7+, Ecto, Plug, LiveView | 794 | ~120 |
 | [`standards/code-security-c-cpp.md`](standards/code-security-c-cpp.md) | SEI CERT C/C++ Coding Standard + MISRA C:2023 + CWE/MITRE + NIST NVD + Google Project Zero | C11/C17 & C++17/C++20, GCC/Clang, OpenSSL, libsodium | 861 | ~130 |
-| | | **Total (detailed)** | **14,144** | **~1,877** |
+| [`standards/code-security-dart.md`](standards/code-security-dart.md) | Dart SDK Security Advisories + OWASP MASVS + OWASP Mobile Top 10:2024 + NVD + GitHub Advisory Database + Zellic Research | Dart 3.x & Flutter 3.x, mobile (Android/iOS), Dart server, Flutter web | 1,331 | ~150 |
+| | | **Total (detailed)** | **15,475** | **~2,027** |
 
-> **Total including essentials:** 20 files, 14,415 lines, ~1,969 rules
+> **Total including essentials:** 21 files, 15,746 lines, ~2,119 rules
 
 ---
 
@@ -205,9 +206,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-elixir/
     │   ├── SKILL.md                ← trigger: Elixir/Phoenix code, Code.eval_string, String.to_atom, binary_to_term, Sobelow
     │   └── rules.md                ← Elixir & Phoenix Security (794 lines)
-    └── security-c-cpp/
-        ├── SKILL.md                ← trigger: C/C++ code, gets/strcpy, malloc/free, use-after-free, format string, ASan
-        └── rules.md                ← C / C++ Security (861 lines)
+    ├── security-c-cpp/
+    │   ├── SKILL.md                ← trigger: C/C++ code, gets/strcpy, malloc/free, use-after-free, format string, ASan
+    │   └── rules.md                ← C / C++ Security (861 lines)
+    └── security-dart/
+        ├── SKILL.md                ← trigger: Dart/Flutter code, Random(), SharedPreferences, badCertificateCallback, sqflite, dart:ffi
+        └── rules.md                ← Dart & Flutter Security (1,331 lines)
 ```
 
 ---
@@ -230,7 +234,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 19-skill structure as Claude Code.
+Same 20-skill structure as Claude Code.
 
 ---
 
@@ -301,6 +305,9 @@ You don't need all of them. Pick the files relevant to your project:
 | Elixir / Phoenix web/API app | `security-elixir` + `security-web` + `security-api` + `security-secrets` |
 | C / C++ application or library | `security-c-cpp` + `security-secrets` |
 | C / C++ network service | `security-c-cpp` + `security-web` + `security-api` + `security-secrets` |
+| Dart / Flutter mobile app | `security-dart` + `security-mobile` + `security-secrets` |
+| Dart / Flutter web app | `security-dart` + `security-web` + `security-secrets` |
+| Dart server-side application | `security-dart` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -404,6 +411,10 @@ Security rules for Elixir 1.15+ and Phoenix 1.7+, covering 16 security domains s
 ### C / C++ Security
 
 Security rules for C11/C17 and C++17/C++20, covering 16 security domains specific to systems programming. The most critical C/C++-specific risks are: **buffer overflow via dangerous C stdlib functions** (`gets`, `strcpy`, `strcat`, `sprintf` — all forbidden; use `fgets`, `strncpy`/`strlcpy`, `snprintf` with explicit size limits), **use-after-free and dangling pointers** (mitigated with RAII, `std::unique_ptr`/`shared_ptr`, and never returning pointers to local variables), **integer overflow** (signed overflow is undefined behavior in C/C++ — use `__builtin_mul_overflow`, `std::numeric_limits` checks, or C23 `stdckdint.h`), and **format string injection** (`printf(user_input)` enables stack read/write — always use `printf("%s", input)`). Unique sections include: **cryptographic memory zeroization** (`memset` can be optimized away by the compiler — use `explicit_bzero`, `memset_s`, or `SecureZeroMemory` on Windows), **CSPRNG** (`rand()` is not cryptographically secure — use `getrandom(2)`, `arc4random_buf`, or `/dev/urandom`), **TOCTOU race conditions** (`access()+open()` pattern — use `O_NOFOLLOW` flag and `openat()`), **compiler hardening flags** (`-fstack-protector-strong`, `-pie`, RELRO, `-D_FORTIFY_SOURCE=3`, CFI, AddressSanitizer/UBSanitizer/MemorySanitizer), **C++ exception safety and RAII** (`lock_guard`/`scoped_lock` for mutexes, `unique_ptr` custom deleters), and **supply chain** (CMake `FetchContent_Declare` SHA pinning, CVE-2024-3094 XZ Utils backdoor). Contains 10 real CVEs (Heartbleed, Baron Samedit, regreSSHion, XZ backdoor, and others), a 50-item security checklist, and 11 tools (ASan, UBSan, MSan, Valgrind, cppcheck, Clang Static Analyzer, CodeQL, Semgrep, Coverity, checksec, Flawfinder).
+
+### Dart / Flutter Security
+
+Security rules for Dart 3.x and Flutter 3.x, covering mobile (Android/iOS), Dart server-side, and Flutter web. The most common critical finding in Flutter penetration tests is **insecure local storage** — `SharedPreferences` and unencrypted Hive boxes store data as plaintext XML/binary on the device; all secrets must use `flutter_secure_storage` (Android Keystore / iOS Keychain). The second most common critical is **TLS bypass**: the `badCertificateCallback = (_, __, ___) => true` pattern disables all certificate validation, enabling trivial MitM attacks. Additional sections cover: **weak PRNG** (`dart:math Random()` has 32-bit entropy — the Zellic Research 2024 finding showed Proton Wallet's BIP39 mnemonic was brute-forceable in 16 minutes; always use `Random.secure()`), **SQL injection in `sqflite`** (CVE-2023-41387 CVSS 9.1 — `flutter_downloader` allowed session theft and arbitrary file write via unparameterized queries), **command injection via `Process.run(runInShell: true)`**, **path traversal in `dart:io` File operations** (CVE-2024-54461), **WebView JavaScript bridge abuse** (CVE-2020-6506 UXSS), **deep link/URL scheme hijacking** (custom `myapp://` schemes interceptable by any installed app — use HTTPS App Links/Universal Links), **biometric authentication bypass** (Frida-hookable boolean result — use hardware-backed `CryptoObject`), **hardcoded secrets via `--dart-define`** (values appear in Base64 in iOS `Info.plist` and are extractable from Android binaries via `blutter`), **sensitive data in `print()` logs** (not stripped in release mode — visible in `adb logcat`), **`dart:ffi` memory safety** (bypasses Dart GC — use `Arena` for scoped allocation), **cryptography misuse** (AES-ECB mode, IV reuse, `package:crypto` MD5/SHA-1 for passwords), **JWT validation** (`JWT.decode()` skips signature — always use `JWT.verify()`), and **pub.dev supply chain** (`dart pub audit` + osv-scanner in CI). Contains 11 real CVEs (2020–2026, CVSS 3.0–9.8), a comprehensive security checklist, and 12 tools including MobSF, objection, blutter, and freeRASP.
 
 ### Ruby Security
 

@@ -41,6 +41,7 @@ $SKILLS = @(
   @{ Key = 'security-ruby';     Label = 'Ruby & Rails Security';                           Std = 'code-security-ruby.md' }
   @{ Key = 'security-elixir';  Label = 'Elixir & Phoenix Security';                       Std = 'code-security-elixir.md' }
   @{ Key = 'security-c-cpp';   Label = 'C / C++ Security';                                Std = 'code-security-c-cpp.md' }
+  @{ Key = 'security-dart';   Label = 'Dart & Flutter Security';                          Std = 'code-security-dart.md' }
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
