@@ -148,4 +148,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-clojure.md',
     detail: 'eval/read-string, nREPL, Ring/Compojure, next.jdbc, nippy',
   },
+  {
+    key: 'security-ruby',
+    label: 'Ruby & Rails Security',
+    stdFile: 'code-security-ruby.md',
+    detail: 'Marshal.load, YAML.load, eval, params.permit!, html_safe, Brakeman, bundler-audit',
+  },
 ];

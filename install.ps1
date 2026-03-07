@@ -38,6 +38,7 @@ $SKILLS = @(
   @{ Key = 'security-csharp';    Label = 'C# / .NET Security';                             Std = 'code-security-csharp.md' }
   @{ Key = 'security-jvm';       Label = 'Java & Kotlin (JVM) Security';                   Std = 'code-security-jvm.md' }
   @{ Key = 'security-clojure';   Label = 'Clojure Security';                               Std = 'code-security-clojure.md' }
+  @{ Key = 'security-ruby';     Label = 'Ruby & Rails Security';                           Std = 'code-security-ruby.md' }
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

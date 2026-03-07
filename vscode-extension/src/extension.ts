@@ -16,7 +16,7 @@ import {
 const ALL_SKILLS_ITEM: vscode.QuickPickItem = {
   label: '$(check-all) All skills',
   description: `all ${ALL_SKILLS.length} skill files`,
-  detail: 'API, ASVS, CWE, IaC, JS/TS, LLM, Mobile, PHP, Privacy, Python3, SbD, Secrets, Web, C#, JVM, Clojure',
+  detail: 'API, ASVS, CWE, IaC, JS/TS, LLM, Mobile, PHP, Privacy, Python3, SbD, Secrets, Web, C#, JVM, Clojure, Ruby',
   alwaysShow: true,
 };
 

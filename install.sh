@@ -53,6 +53,7 @@ SKILLS=(
   "security-csharp|C# / .NET Security|code-security-csharp.md"
   "security-jvm|Java & Kotlin (JVM) Security|code-security-jvm.md"
   "security-clojure|Clojure Security|code-security-clojure.md"
+  "security-ruby|Ruby & Rails Security|code-security-ruby.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

@@ -38,9 +38,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-csharp.md`](standards/code-security-csharp.md) | Microsoft Security Advisories + NIST NVD + OWASP | C# / .NET 6+ & ASP.NET Core | 941 | ~105 |
 | [`standards/code-security-jvm.md`](standards/code-security-jvm.md) | Oracle Java Security Advisories + Kotlin Security Docs + NIST NVD + Spring Security | Java 11+ & Kotlin 1.9+ on the JVM, Spring Boot | 1,194 | ~127 |
 | [`standards/code-security-clojure.md`](standards/code-security-clojure.md) | Clojure Security Advisories + NIST NVD + OWASP Injection Prevention + Ring/Leiningen Security | Clojure 1.11+ on the JVM, Ring/Compojure, next.jdbc | 542 | ~60 |
-| | | **Total (detailed)** | **11,785** | **~1,512** |
+| [`standards/code-security-ruby.md`](standards/code-security-ruby.md) | Ruby Security Advisories + Rails Security Guide + OWASP + NIST NVD + Snyk Ruby DB | Ruby 3.x & Ruby on Rails 7.x, Sinatra, Devise, Nokogiri | 704 | ~115 |
+| | | **Total (detailed)** | **12,489** | **~1,627** |
 
-> **Total including essentials:** 17 files, 12,056 lines, ~1,604 rules
+> **Total including essentials:** 18 files, 12,760 lines, ~1,719 rules
 
 ---
 
@@ -193,9 +194,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-jvm/
     │   ├── SKILL.md                ← trigger: Java/Kotlin code, ObjectInputStream, JNDI, SpEL, Log4Shell, coroutines
     │   └── rules.md                ← Java & Kotlin JVM Security (1,148 lines)
-    └── security-clojure/
-        ├── SKILL.md                ← trigger: Clojure code, eval, read-string, nREPL, Ring, next.jdbc, nippy
-        └── rules.md                ← Clojure Security (542 lines)
+    ├── security-clojure/
+    │   ├── SKILL.md                ← trigger: Clojure code, eval, read-string, nREPL, Ring, next.jdbc, nippy
+    │   └── rules.md                ← Clojure Security (542 lines)
+    └── security-ruby/
+        ├── SKILL.md                ← trigger: Ruby/Rails code, eval, Marshal.load, YAML.load, params.permit!, html_safe, Brakeman
+        └── rules.md                ← Ruby & Rails Security (704 lines)
 ```
 
 ---
@@ -218,7 +222,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 16-skill structure as Claude Code.
+Same 17-skill structure as Claude Code.
 
 ---
 
@@ -283,6 +287,8 @@ You don't need all of them. Pick the files relevant to your project:
 | Java or Kotlin / Spring Boot web/API app | `security-jvm` + `security-web` + `security-api` + `security-secrets` |
 | Clojure application | `security-clojure` + `security-jvm` + `security-secrets` |
 | Clojure web/API app (Ring/Compojure) | `security-clojure` + `security-jvm` + `security-web` + `security-api` + `security-secrets` |
+| Ruby application | `security-ruby` + `security-secrets` |
+| Ruby on Rails web/API app | `security-ruby` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -378,6 +384,10 @@ Comprehensive security rules for C# and .NET 6+ applications. Covers 17 vulnerab
 ### Clojure Security
 
 Security rules for Clojure 1.11+ on the JVM, covering the Ring/Compojure web stack and next.jdbc. The most critical Clojure-specific risk is code execution via `eval` and `clojure.core/read-string` — this file explains why `clojure.edn/read-string` must be used instead for all external data. Additional sections cover: nREPL/REPL exposure (bind to `127.0.0.1`, disabled in production), EDN and Transit deserialization (including nippy `thaw` with password and length check), SQL injection via `next.jdbc` parameterized vectors, Ring middleware security (`wrap-defaults`, `ring.middleware.anti-forgery`, session fixation prevention), OS command injection via `clojure.java.shell/sh`, path traversal via `clojure.java.io`, cryptography via Java interop (buddy-hashers, SecureRandom, AES-GCM), sensitive data in timbre logs (redaction middleware), and Leiningen/deps.edn supply chain (lein-nvd, clj-watson). Includes a Java Interop Security Note pointing to `security-jvm` for ObjectInputStream, JNDI, XXE, and Log4j risks. Contains 5 real CVEs, a 35-item security checklist, and tooling including clj-holmes, eastwood, and Semgrep Clojure rules.
+
+### Ruby Security
+
+Security rules for Ruby 3.x and Ruby on Rails 7.x, covering 16 security domains specific to the language and its most popular frameworks. The most dangerous Ruby-specific risks are `Marshal.load` RCE (never deserialize untrusted Marshal data), `YAML.load` gadget chains (use `YAML.safe_load`), and the `^`/`$` vs `\A`/`\z` anchor confusion in regex validation — a silent validator bypass that is virtually impossible to detect without knowing the pitfall. Rails-specific sections cover: `eval`/`instance_eval`/`ERB.new` code injection, `send`/`public_send` dynamic dispatch allowlisting, ActiveRecord SQL injection via string interpolation in `where`/`order`/`group`, shell command injection (array form vs string form), path traversal with `render file:` (CVE-2019-5418), mass assignment via `params.permit!`, XSS through `html_safe`/`raw`, open redirect via `redirect_to params[:return_to]` (CVE-2021-44528, CVE-2024-41128), SSTI via `render params[:template]`, Nokogiri XXE, session fixation (`reset_session` before login), IDOR prevention with Pundit/CanCanCan, file upload validation by magic bytes via CarrierWave/ActiveStorage, and log filtering for sensitive parameters. Contains 10 real CVEs (2013–2024), a 45-item security checklist, and tooling including Brakeman, bundler-audit, RuboCop, and Semgrep Ruby rules.
 
 ---
 
