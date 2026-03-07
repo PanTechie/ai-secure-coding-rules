@@ -172,4 +172,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-dart.md',
     detail: 'Random.secure(), SharedPreferences, badCertificateCallback, sqflite SQLi, dart:ffi, MobSF',
   },
+  {
+    key: 'security-objc',
+    label: 'Objective-C Security',
+    stdFile: 'code-security-objc.md',
+    detail: 'NSKeyedUnarchiver, KVC injection, NSLog, performSelector:, arc4random, CocoaPods supply chain',
+  },
 ];
