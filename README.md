@@ -39,9 +39,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-jvm.md`](standards/code-security-jvm.md) | Oracle Java Security Advisories + Kotlin Security Docs + NIST NVD + Spring Security | Java 11+ & Kotlin 1.9+ on the JVM, Spring Boot | 1,194 | ~127 |
 | [`standards/code-security-clojure.md`](standards/code-security-clojure.md) | Clojure Security Advisories + NIST NVD + OWASP Injection Prevention + Ring/Leiningen Security | Clojure 1.11+ on the JVM, Ring/Compojure, next.jdbc | 542 | ~60 |
 | [`standards/code-security-ruby.md`](standards/code-security-ruby.md) | Ruby Security Advisories + Rails Security Guide + OWASP + NIST NVD + Snyk Ruby DB | Ruby 3.x & Ruby on Rails 7.x, Sinatra, Devise, Nokogiri | 704 | ~115 |
-| | | **Total (detailed)** | **12,489** | **~1,627** |
+| [`standards/code-security-elixir.md`](standards/code-security-elixir.md) | Elixir Security Advisories + Erlang/OTP Advisories + NIST NVD + Sobelow + OWASP | Elixir 1.15+ & Phoenix 1.7+, Ecto, Plug, LiveView | 794 | ~120 |
+| | | **Total (detailed)** | **13,283** | **~1,747** |
 
-> **Total including essentials:** 18 files, 12,760 lines, ~1,719 rules
+> **Total including essentials:** 19 files, 13,554 lines, ~1,839 rules
 
 ---
 
@@ -197,9 +198,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-clojure/
     │   ├── SKILL.md                ← trigger: Clojure code, eval, read-string, nREPL, Ring, next.jdbc, nippy
     │   └── rules.md                ← Clojure Security (542 lines)
-    └── security-ruby/
-        ├── SKILL.md                ← trigger: Ruby/Rails code, eval, Marshal.load, YAML.load, params.permit!, html_safe, Brakeman
-        └── rules.md                ← Ruby & Rails Security (704 lines)
+    ├── security-ruby/
+    │   ├── SKILL.md                ← trigger: Ruby/Rails code, eval, Marshal.load, YAML.load, params.permit!, html_safe, Brakeman
+    │   └── rules.md                ← Ruby & Rails Security (704 lines)
+    └── security-elixir/
+        ├── SKILL.md                ← trigger: Elixir/Phoenix code, Code.eval_string, String.to_atom, binary_to_term, Sobelow
+        └── rules.md                ← Elixir & Phoenix Security (794 lines)
 ```
 
 ---
@@ -222,7 +226,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 17-skill structure as Claude Code.
+Same 18-skill structure as Claude Code.
 
 ---
 
@@ -289,6 +293,8 @@ You don't need all of them. Pick the files relevant to your project:
 | Clojure web/API app (Ring/Compojure) | `security-clojure` + `security-jvm` + `security-web` + `security-api` + `security-secrets` |
 | Ruby application | `security-ruby` + `security-secrets` |
 | Ruby on Rails web/API app | `security-ruby` + `security-web` + `security-api` + `security-secrets` |
+| Elixir application | `security-elixir` + `security-secrets` |
+| Elixir / Phoenix web/API app | `security-elixir` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -384,6 +390,10 @@ Comprehensive security rules for C# and .NET 6+ applications. Covers 17 vulnerab
 ### Clojure Security
 
 Security rules for Clojure 1.11+ on the JVM, covering the Ring/Compojure web stack and next.jdbc. The most critical Clojure-specific risk is code execution via `eval` and `clojure.core/read-string` — this file explains why `clojure.edn/read-string` must be used instead for all external data. Additional sections cover: nREPL/REPL exposure (bind to `127.0.0.1`, disabled in production), EDN and Transit deserialization (including nippy `thaw` with password and length check), SQL injection via `next.jdbc` parameterized vectors, Ring middleware security (`wrap-defaults`, `ring.middleware.anti-forgery`, session fixation prevention), OS command injection via `clojure.java.shell/sh`, path traversal via `clojure.java.io`, cryptography via Java interop (buddy-hashers, SecureRandom, AES-GCM), sensitive data in timbre logs (redaction middleware), and Leiningen/deps.edn supply chain (lein-nvd, clj-watson). Includes a Java Interop Security Note pointing to `security-jvm` for ObjectInputStream, JNDI, XXE, and Log4j risks. Contains 5 real CVEs, a 35-item security checklist, and tooling including clj-holmes, eastwood, and Semgrep Clojure rules.
+
+### Elixir Security
+
+Security rules for Elixir 1.15+ and Phoenix 1.7+, covering 16 security domains specific to the BEAM VM and its ecosystem. The most critical Elixir-specific risks that do not exist in most other languages are: **atom exhaustion** (`String.to_atom/1` with user input grows the atom table indefinitely until VM crash — use `String.to_existing_atom/1`) and **ETF deserialization** (`:erlang.binary_to_term/1` without `[:safe]` flag enables atom creation and potential RCE gadgets — always use the safe flag or prefer JSON). Phoenix-specific sections cover: `Code.eval_string`/`EEx.eval_string` code injection, `:os.cmd/1` vs `System.cmd/3` command injection, Ecto SQL injection via `fragment/1` string interpolation, path traversal with `Path.expand/1`, SweetXml/xmerl XXE (use `Saxy` instead), cryptography with `:crypto` AES-256-GCM and `Bcrypt`/`Argon2`, Guardian JWT misconfiguration, Phoenix LiveView authorization in `handle_event/3`, session fixation prevention (`configure_session(conn, renew: true)`), compile-time vs runtime secrets (`config/runtime.exs` with `System.fetch_env!/1`), CORS and CSRF in Plug pipelines, and process/message security. Critically includes CVE-2025-32433 — the March 2025 Critical (10.0) unauthenticated RCE in Erlang/OTP SSH daemon that affects all Elixir applications on unpatched OTP. Contains 8 real CVEs (2019–2025), a 50-item security checklist, and tooling including Sobelow and mix_audit.
 
 ### Ruby Security
 

@@ -54,6 +54,7 @@ SKILLS=(
   "security-jvm|Java & Kotlin (JVM) Security|code-security-jvm.md"
   "security-clojure|Clojure Security|code-security-clojure.md"
   "security-ruby|Ruby & Rails Security|code-security-ruby.md"
+  "security-elixir|Elixir & Phoenix Security|code-security-elixir.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
