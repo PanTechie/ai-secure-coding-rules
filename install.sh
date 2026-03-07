@@ -50,6 +50,9 @@ SKILLS=(
   "security-sbd|Secure by Design (CISA / NIST SSDF)|code-security-secure-by-design.md"
   "security-secrets|Secrets Management|code-security-secrets.md"
   "security-web|Web Application Security (OWASP Top 10:2025)|code-security-owasp-top10-2025.md"
+  "security-csharp|C# / .NET Security|code-security-csharp.md"
+  "security-jvm|Java & Kotlin (JVM) Security|code-security-jvm.md"
+  "security-clojure|Clojure Security|code-security-clojure.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

@@ -57,9 +57,51 @@ These files contain comprehensive rules with code examples, framework-specific p
 
 ---
 
-### Interactive Installer
+### VSCode Extension
 
-The fastest way to add security rules to any project — runs interactively, lets you pick the platforms and skills you want, and downloads only what you need.
+The easiest way to install if you use Visual Studio Code. Search for **"AI Secure Coding Rules"** in the Extensions panel, or install from the Marketplace.
+
+#### First install
+
+1. Open your project folder in VSCode
+2. Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (Mac)
+3. Type `AI Secure Coding` and select **`Install AI Secure Coding Rules`**
+4. **Step 1 — Platforms:** select one or more AI assistants to install for:
+   - `Claude Code` → files go into `.claude/`
+   - `Gemini Antigravity` → files go into `.agent/`
+   - `Cursor` → files go into `.cursor/`
+   - `OpenAI Codex` → creates `AGENTS.md`
+5. **Step 2 — Skills:** pick the security domains you want (or choose *All skills* / *None*). `security-essentials` is always included.
+6. A progress notification shows each file being downloaded. When done, commit the result:
+
+```bash
+git add .claude/ .agent/ .cursor/ AGENTS.md .ai-secure-rules.json
+git commit -m "chore: add AI secure coding rules"
+```
+
+#### Checking for updates / managing installed skills
+
+After the first install, use **`Manage AI Secure Coding Rules`** (`Ctrl+Shift+P` → `AI Secure Coding: Manage`):
+
+1. The extension fetches current file hashes from GitHub (one API call)
+2. A list shows all 16 skills with their status:
+   - `✓ Up-to-date` — already on the latest version
+   - `↑ Update available` — newer version on GitHub (pre-selected automatically)
+   - `? Installed (version unknown)` — installed via shell script, version not tracked
+   - `⊘ Not installed`
+3. Select the skills you want to act on, then choose:
+   - **Install / Update** → select platforms → downloads latest files
+   - **Remove** → deletes skill files from the workspace
+
+A `.ai-secure-rules.json` manifest is written to the workspace root to track installed platforms and skill versions across sessions.
+
+> Source: [`vscode-extension/`](vscode-extension/)
+
+---
+
+### Interactive Installer (Terminal)
+
+For non-VSCode environments (terminal, CI/CD, remote servers). Runs interactively, lets you pick the platforms and skills you want, and downloads only what you need.
 
 **Bash (macOS / Linux / WSL):**
 
@@ -78,7 +120,7 @@ bash <(curl -fsSL https://raw.githubusercontent.com/PanTechie/ai-secure-coding-r
 The installer will ask you:
 1. **Destination directory** — where to install (defaults to current directory)
 2. **Platforms** — Claude Code, Gemini Antigravity, Cursor, OpenAI Codex, or all
-3. **Skills** — pick any combination of the 13 security domains (or all/none)
+3. **Skills** — pick any combination of the 16 security domains (or all/none)
 
 ---
 

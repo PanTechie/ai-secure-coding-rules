@@ -1,0 +1,65 @@
+{
+  "name": "ai-secure-coding-rules",
+  "displayName": "AI Secure Coding Rules",
+  "description": "Install security rules for Claude Code, Gemini Antigravity, Cursor, and OpenAI Codex — 1,500+ rules from OWASP, CWE, NIST, and CISA.",
+  "version": "1.0.0",
+  "publisher": "PanTechie",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PanTechie/ai-secure-coding-rules"
+  },
+  "homepage": "https://github.com/PanTechie/ai-secure-coding-rules#readme",
+  "bugs": {
+    "url": "https://github.com/PanTechie/ai-secure-coding-rules/issues"
+  },
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "security",
+    "claude",
+    "claude code",
+    "gemini",
+    "cursor",
+    "owasp",
+    "secure coding",
+    "ai assistant",
+    "devsecops",
+    "cwe",
+    "nist",
+    "cisa"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "aiSecureRules.install",
+        "title": "Install AI Secure Coding Rules",
+        "category": "AI Secure Coding"
+      },
+      {
+        "command": "aiSecureRules.manage",
+        "title": "Manage AI Secure Coding Rules",
+        "category": "AI Secure Coding"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "vscode:prepublish": "npm run compile",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.0.0"
+  }
+}

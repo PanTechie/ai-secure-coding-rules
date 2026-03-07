@@ -60,7 +60,25 @@ standards/                          ← canonical source of truth (edit here fir
     └── security-essentials.mdc    ← .mdc extension required; alwaysApply: true
 
 AGENTS.md                           ← OpenAI Codex (always-on, full essentials inline)
+
+vscode-extension/                   ← VSCode extension (TypeScript)
+├── package.json                    ← extension manifest, commands, Marketplace metadata
+├── tsconfig.json
+├── .vscodeignore
+├── CHANGELOG.md
+└── src/
+    ├── extension.ts                ← activate(); registers aiSecureRules.install + aiSecureRules.manage
+    ├── skills.ts                   ← Platform type, PLATFORM_ITEMS, Skill interface, ALL_SKILLS (16)
+    ├── installer.ts                ← install() + removeSkills(); tracks SHAs; returns Manifest
+    └── manifest.ts                 ← Manifest type, blobSha(), readManifest/writeManifest,
+                                       fetchRemoteShas() (GitHub Tree API), getSkillStatuses()
 ```
+
+**VSCode extension commands:**
+- `aiSecureRules.install` — QuickPick: platforms → skills → downloads + writes `.ai-secure-rules.json`
+- `aiSecureRules.manage` — Fetches remote SHAs (1 GitHub API call), shows status per skill (up-to-date / outdated / installed-unknown / not-installed), lets user install/update/remove + writes updated manifest
+
+**Manifest file:** `.ai-secure-rules.json` at workspace root — tracks `platforms[]` and `skillShas` (skillKey → git blob SHA of `rules.md`). Written by both commands. Fallback: if file absent but skill directories exist, reports `installed-unknown` (handles shell-script installs).
 
 **Key rule:** `standards/` is the single source of truth. All `rules.md` files in platform skill directories are copies. After editing a `standards/` file, always sync:
 ```bash

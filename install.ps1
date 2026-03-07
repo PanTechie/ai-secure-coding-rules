@@ -35,6 +35,9 @@ $SKILLS = @(
   @{ Key = 'security-sbd';        Label = 'Secure by Design (CISA / NIST SSDF)';           Std = 'code-security-secure-by-design.md' }
   @{ Key = 'security-secrets';    Label = 'Secrets Management';                            Std = 'code-security-secrets.md' }
   @{ Key = 'security-web';        Label = 'Web Application Security (OWASP Top 10:2025)';  Std = 'code-security-owasp-top10-2025.md' }
+  @{ Key = 'security-csharp';    Label = 'C# / .NET Security';                             Std = 'code-security-csharp.md' }
+  @{ Key = 'security-jvm';       Label = 'Java & Kotlin (JVM) Security';                   Std = 'code-security-jvm.md' }
+  @{ Key = 'security-clojure';   Label = 'Clojure Security';                               Std = 'code-security-clojure.md' }
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

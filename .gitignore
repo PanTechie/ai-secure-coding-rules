@@ -17,6 +17,11 @@ desktop.ini
 # Editors — VS Code
 .vscode/
 
+# VSCode Extension — build artifacts and dependencies
+vscode-extension/node_modules/
+vscode-extension/out/
+*.vsix
+
 # Editors — JetBrains (IntelliJ, WebStorm, etc.)
 .idea/
 
