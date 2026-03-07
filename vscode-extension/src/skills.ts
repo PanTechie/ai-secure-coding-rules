@@ -160,4 +160,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-elixir.md',
     detail: 'atom exhaustion, binary_to_term, Code.eval_string, Ecto SQLi, LiveView, Sobelow',
   },
+  {
+    key: 'security-c-cpp',
+    label: 'C / C++ Security',
+    stdFile: 'code-security-c-cpp.md',
+    detail: 'gets/strcpy, use-after-free, format string, TOCTOU, AddressSanitizer, compiler hardening',
+  },
 ];

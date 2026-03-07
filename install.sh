@@ -55,6 +55,7 @@ SKILLS=(
   "security-clojure|Clojure Security|code-security-clojure.md"
   "security-ruby|Ruby & Rails Security|code-security-ruby.md"
   "security-elixir|Elixir & Phoenix Security|code-security-elixir.md"
+  "security-c-cpp|C / C++ Security|code-security-c-cpp.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

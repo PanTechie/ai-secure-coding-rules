@@ -40,9 +40,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-clojure.md`](standards/code-security-clojure.md) | Clojure Security Advisories + NIST NVD + OWASP Injection Prevention + Ring/Leiningen Security | Clojure 1.11+ on the JVM, Ring/Compojure, next.jdbc | 542 | ~60 |
 | [`standards/code-security-ruby.md`](standards/code-security-ruby.md) | Ruby Security Advisories + Rails Security Guide + OWASP + NIST NVD + Snyk Ruby DB | Ruby 3.x & Ruby on Rails 7.x, Sinatra, Devise, Nokogiri | 704 | ~115 |
 | [`standards/code-security-elixir.md`](standards/code-security-elixir.md) | Elixir Security Advisories + Erlang/OTP Advisories + NIST NVD + Sobelow + OWASP | Elixir 1.15+ & Phoenix 1.7+, Ecto, Plug, LiveView | 794 | ~120 |
-| | | **Total (detailed)** | **13,283** | **~1,747** |
+| [`standards/code-security-c-cpp.md`](standards/code-security-c-cpp.md) | SEI CERT C/C++ Coding Standard + MISRA C:2023 + CWE/MITRE + NIST NVD + Google Project Zero | C11/C17 & C++17/C++20, GCC/Clang, OpenSSL, libsodium | 861 | ~130 |
+| | | **Total (detailed)** | **14,144** | **~1,877** |
 
-> **Total including essentials:** 19 files, 13,554 lines, ~1,839 rules
+> **Total including essentials:** 20 files, 14,415 lines, ~1,969 rules
 
 ---
 
@@ -201,9 +202,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-ruby/
     │   ├── SKILL.md                ← trigger: Ruby/Rails code, eval, Marshal.load, YAML.load, params.permit!, html_safe, Brakeman
     │   └── rules.md                ← Ruby & Rails Security (704 lines)
-    └── security-elixir/
-        ├── SKILL.md                ← trigger: Elixir/Phoenix code, Code.eval_string, String.to_atom, binary_to_term, Sobelow
-        └── rules.md                ← Elixir & Phoenix Security (794 lines)
+    ├── security-elixir/
+    │   ├── SKILL.md                ← trigger: Elixir/Phoenix code, Code.eval_string, String.to_atom, binary_to_term, Sobelow
+    │   └── rules.md                ← Elixir & Phoenix Security (794 lines)
+    └── security-c-cpp/
+        ├── SKILL.md                ← trigger: C/C++ code, gets/strcpy, malloc/free, use-after-free, format string, ASan
+        └── rules.md                ← C / C++ Security (861 lines)
 ```
 
 ---
@@ -226,7 +230,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 18-skill structure as Claude Code.
+Same 19-skill structure as Claude Code.
 
 ---
 
@@ -295,6 +299,8 @@ You don't need all of them. Pick the files relevant to your project:
 | Ruby on Rails web/API app | `security-ruby` + `security-web` + `security-api` + `security-secrets` |
 | Elixir application | `security-elixir` + `security-secrets` |
 | Elixir / Phoenix web/API app | `security-elixir` + `security-web` + `security-api` + `security-secrets` |
+| C / C++ application or library | `security-c-cpp` + `security-secrets` |
+| C / C++ network service | `security-c-cpp` + `security-web` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -394,6 +400,10 @@ Security rules for Clojure 1.11+ on the JVM, covering the Ring/Compojure web sta
 ### Elixir Security
 
 Security rules for Elixir 1.15+ and Phoenix 1.7+, covering 16 security domains specific to the BEAM VM and its ecosystem. The most critical Elixir-specific risks that do not exist in most other languages are: **atom exhaustion** (`String.to_atom/1` with user input grows the atom table indefinitely until VM crash — use `String.to_existing_atom/1`) and **ETF deserialization** (`:erlang.binary_to_term/1` without `[:safe]` flag enables atom creation and potential RCE gadgets — always use the safe flag or prefer JSON). Phoenix-specific sections cover: `Code.eval_string`/`EEx.eval_string` code injection, `:os.cmd/1` vs `System.cmd/3` command injection, Ecto SQL injection via `fragment/1` string interpolation, path traversal with `Path.expand/1`, SweetXml/xmerl XXE (use `Saxy` instead), cryptography with `:crypto` AES-256-GCM and `Bcrypt`/`Argon2`, Guardian JWT misconfiguration, Phoenix LiveView authorization in `handle_event/3`, session fixation prevention (`configure_session(conn, renew: true)`), compile-time vs runtime secrets (`config/runtime.exs` with `System.fetch_env!/1`), CORS and CSRF in Plug pipelines, and process/message security. Critically includes CVE-2025-32433 — the March 2025 Critical (10.0) unauthenticated RCE in Erlang/OTP SSH daemon that affects all Elixir applications on unpatched OTP. Contains 8 real CVEs (2019–2025), a 50-item security checklist, and tooling including Sobelow and mix_audit.
+
+### C / C++ Security
+
+Security rules for C11/C17 and C++17/C++20, covering 16 security domains specific to systems programming. The most critical C/C++-specific risks are: **buffer overflow via dangerous C stdlib functions** (`gets`, `strcpy`, `strcat`, `sprintf` — all forbidden; use `fgets`, `strncpy`/`strlcpy`, `snprintf` with explicit size limits), **use-after-free and dangling pointers** (mitigated with RAII, `std::unique_ptr`/`shared_ptr`, and never returning pointers to local variables), **integer overflow** (signed overflow is undefined behavior in C/C++ — use `__builtin_mul_overflow`, `std::numeric_limits` checks, or C23 `stdckdint.h`), and **format string injection** (`printf(user_input)` enables stack read/write — always use `printf("%s", input)`). Unique sections include: **cryptographic memory zeroization** (`memset` can be optimized away by the compiler — use `explicit_bzero`, `memset_s`, or `SecureZeroMemory` on Windows), **CSPRNG** (`rand()` is not cryptographically secure — use `getrandom(2)`, `arc4random_buf`, or `/dev/urandom`), **TOCTOU race conditions** (`access()+open()` pattern — use `O_NOFOLLOW` flag and `openat()`), **compiler hardening flags** (`-fstack-protector-strong`, `-pie`, RELRO, `-D_FORTIFY_SOURCE=3`, CFI, AddressSanitizer/UBSanitizer/MemorySanitizer), **C++ exception safety and RAII** (`lock_guard`/`scoped_lock` for mutexes, `unique_ptr` custom deleters), and **supply chain** (CMake `FetchContent_Declare` SHA pinning, CVE-2024-3094 XZ Utils backdoor). Contains 10 real CVEs (Heartbleed, Baron Samedit, regreSSHion, XZ backdoor, and others), a 50-item security checklist, and 11 tools (ASan, UBSan, MSan, Valgrind, cppcheck, Clang Static Analyzer, CodeQL, Semgrep, Coverity, checksec, Flawfinder).
 
 ### Ruby Security
 
