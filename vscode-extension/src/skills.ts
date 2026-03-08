@@ -190,4 +190,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-go.md',
     detail: 'os/exec injection, database/sql SQLi, goroutine races, missing timeouts, SSRF, govulncheck',
   },
+  {
+    key: 'security-rust',
+    label: 'Rust Security',
+    stdFile: 'code-security-rust.md',
+    detail: 'unsafe/Send+Sync, integer overflow, diesel/sqlx SQLi, AES-GCM nonce reuse, cargo-audit, RustSec',
+  },
 ];
