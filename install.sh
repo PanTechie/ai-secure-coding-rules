@@ -58,6 +58,7 @@ SKILLS=(
   "security-c-cpp|C / C++ Security|code-security-c-cpp.md"
   "security-dart|Dart & Flutter Security|code-security-dart.md"
   "security-objc|Objective-C Security|code-security-objc.md"
+  "security-swift|Swift Security|code-security-swift.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

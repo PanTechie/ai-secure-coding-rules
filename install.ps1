@@ -43,6 +43,7 @@ $SKILLS = @(
   @{ Key = 'security-c-cpp';   Label = 'C / C++ Security';                                Std = 'code-security-c-cpp.md' }
   @{ Key = 'security-dart';   Label = 'Dart & Flutter Security';                          Std = 'code-security-dart.md' }
   @{ Key = 'security-objc';   Label = 'Objective-C Security';                             Std = 'code-security-objc.md' }
+  @{ Key = 'security-swift';  Label = 'Swift Security';                                   Std = 'code-security-swift.md' }
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **1,750+ security rules** across 20 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **19 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **1,900+ security rules** across 21 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **20 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -43,9 +43,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-c-cpp.md`](standards/code-security-c-cpp.md) | SEI CERT C/C++ Coding Standard + MISRA C:2023 + CWE/MITRE + NIST NVD + Google Project Zero | C11/C17 & C++17/C++20, GCC/Clang, OpenSSL, libsodium | 861 | ~130 |
 | [`standards/code-security-dart.md`](standards/code-security-dart.md) | Dart SDK Security Advisories + OWASP MASVS + OWASP Mobile Top 10:2024 + NVD + GitHub Advisory Database + Zellic Research | Dart 3.x & Flutter 3.x, mobile (Android/iOS), Dart server, Flutter web | 1,331 | ~150 |
 | [`standards/code-security-objc.md`](standards/code-security-objc.md) | Apple Platform Security Guide + OWASP MASVS 2.1 + SEI CERT C + NVD + GitHub Advisory Database + Project Zero / ZecOps | Objective-C and Objective-C++ targeting iOS 14+ and macOS 12+ | 990 | ~140 |
-| | | **Total (detailed)** | **16,465** | **~2,167** |
+| [`standards/code-security-swift.md`](standards/code-security-swift.md) | Apple Platform Security Guide + OWASP MASVS 2.1 + Swift Evolution + NVD + GitHub Advisory Database + Vapor Security Advisories | Swift 5.x/6.x on iOS 16+/macOS 13+ and server-side (Vapor 4) | 1,012 | ~145 |
+| | | **Total (detailed)** | **17,477** | **~2,312** |
 
-> **Total including essentials:** 22 files, 16,736 lines, ~2,259 rules
+> **Total including essentials:** 23 files, 17,748 lines, ~2,404 rules
 
 ---
 
@@ -213,9 +214,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-dart/
     │   ├── SKILL.md                ← trigger: Dart/Flutter code, Random(), SharedPreferences, badCertificateCallback, sqflite, dart:ffi
     │   └── rules.md                ← Dart & Flutter Security (1,331 lines)
-    └── security-objc/
-        ├── SKILL.md                ← trigger: Objective-C code, NSKeyedUnarchiver, KVC injection, NSLog, performSelector:, CocoaPods
-        └── rules.md                ← Objective-C Security (990 lines)
+    ├── security-objc/
+    │   ├── SKILL.md                ← trigger: Objective-C code, NSKeyedUnarchiver, KVC injection, NSLog, performSelector:, CocoaPods
+    │   └── rules.md                ← Objective-C Security (990 lines)
+    └── security-swift/
+        ├── SKILL.md                ← trigger: Swift/Vapor code, force-unwrap, Codable, UnsafePointer, actor, CryptoKit, Leaf, SPM
+        └── rules.md                ← Swift Security (1,012 lines)
 ```
 
 ---
@@ -238,7 +242,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 21-skill structure as Claude Code.
+Same 22-skill structure as Claude Code.
 
 ---
 
@@ -313,6 +317,9 @@ You don't need all of them. Pick the files relevant to your project:
 | Dart / Flutter web app | `security-dart` + `security-web` + `security-secrets` |
 | Dart server-side application | `security-dart` + `security-api` + `security-secrets` |
 | Objective-C iOS/macOS app | `security-objc` + `security-mobile` + `security-secrets` |
+| Swift iOS/macOS app | `security-swift` + `security-mobile` + `security-secrets` |
+| Swift / Vapor server-side app | `security-swift` + `security-api` + `security-secrets` |
+| Mixed Swift + Objective-C app | `security-swift` + `security-objc` + `security-mobile` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
@@ -424,6 +431,10 @@ Security rules for Dart 3.x and Flutter 3.x, covering mobile (Android/iOS), Dart
 ### Objective-C Security
 
 Security rules for Objective-C and Objective-C++ targeting iOS 14+ and macOS 12+. Objective-C is uniquely dangerous because it combines **C runtime hazards** (buffer overflows, format string injection, use-after-free) with a **highly dynamic message-passing runtime** that enables runtime attacks not possible in memory-safe languages. The most critical Objective-C-specific risks are: **NSKeyedUnarchiver deserialization** (CVE-2019-8641 — `[NSKeyedUnarchiver unarchiveObjectWithData:]` allows arbitrary class instantiation via gadget chains; always restrict with `allowedClasses` and `requiresSecureCoding`), **KVC injection** (`setValue:forKeyPath:` and `valueForKeyPath:@"@sum.field"` with user-controlled keys enables operator injection and property access on unexpected objects — use an allowlist), **NSPredicate format string injection** (`predicateWithFormat:userString` is Core Data's SQL injection equivalent — always use `%@` / `%K` placeholders), and **`performSelector:` / `NSClassFromString` / `NSSelectorFromString` with user input** (enables arbitrary method invocation — restrict to an explicit allowlist). Storage sections cover: **`NSUserDefaults` for secrets** (plaintext plist, never for tokens/passwords — use Keychain with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`), **`NSFileManager` without `NSFileProtectionComplete`**, and **Keychain `kSecAttrAccessibleAlways`** (accessible even when device is locked — a critical misconfiguration). Network sections cover: **`didReceiveAuthenticationChallenge` unconditionally accepting certificates** (trivial MitM), **`NSAllowsArbitraryLoads: YES` in Info.plist** (disables ATS for all domains), and **certificate pinning via `SecTrustEvaluateWithError`**. Additional sections cover: C-inherited buffer overflows (`strcpy`/`sprintf` — use `strlcpy`/`snprintf`), `NSLog` logging sensitive data (visible in device Console in production — not stripped), `LAContext evaluatePolicy:` biometric bypass (Frida-hookable boolean — use hardware-backed Keychain items with `kSecAccessControlBiometryCurrentSet`), Core Foundation ARC bridging mistakes (`__bridge` vs `__bridge_transfer` — wrong choice causes double-free or memory leaks), `NSXMLParser`/libxml2 XXE, binary hardening (`PIE`, stack canaries, `get-task-allow: false`), and CocoaPods supply chain (CVE-2023-38894 — trunk server account takeover affecting 3 million apps). Contains 8 real CVEs (including Operation Triangulation chain: CVE-2023-32434 + CVE-2023-32435), 55-item checklist, and 12 tools including class-dump, Hopper, Frida, objection, and MobSF.
+
+### Swift Security
+
+Security rules for Swift 5.x/6.x on iOS 16+/macOS 13+ and server-side Swift (Vapor 4). Swift eliminates C-level memory hazards present in Objective-C, but introduces its own distinct security pitfalls. The most critical Swift-specific risks are: **force-unwrap (`!`) as a DoS vector** — `let value = dict["key"]!` crashes with a nil attacker-controlled JSON response; always use `guard let` or `if let` for external data; **`UnsafePointer` / `UnsafeMutableRawPointer` bypassing Swift's memory safety** — buffer overflows are possible when copying C data without explicit bounds validation; **`Codable` mass assignment** — decoding untrusted JSON directly into a domain model exposes privileged fields (`isAdmin`, `balance`, `role`) to attacker control; always use a separate input DTO with only the fields the caller should set; **`@objc dynamic` re-introducing ObjC runtime risks** — security-critical methods marked `dynamic` are swizzlable via Frida/`method_exchangeImplementations`; mark them `final` and never `@objc dynamic`; and **CryptoKit misuse** — `SHA256.hash(data: password)` is not password hashing (no salt, fast to brute-force — use PBKDF2 or send to server using bcrypt/Argon2); AES-GCM nonce reuse with the same key breaks both confidentiality and authenticity. Vapor-specific sections cover: **SQL injection via `db.raw("\(userValue)")`** — use `\(bind: value)` interpolation or Fluent ORM; **Leaf `#unsafeHTML()` XSS**; **Vapor JWT with empty `verify()` method** (no `exp`/`iss`/`aud` validation); **CRLF injection in `HTTPHeaders`**; and **Swift Package Manager supply chain** (`Package.resolved` must be committed; use `.exact()` version pinning; always provide `checksum` for binary targets — CVE-2024-38366 was a Critical 10.0 RCE in CocoaPods trunk via shell injection). Additional sections cover: **Swift strict concurrency** (enable `-strict-concurrency=complete` for Swift 6; use `actor` for shared mutable state — not `class` with manual locking), **ReDoS in `NSRegularExpression`/`Regex`**, **open redirect in `onOpenURL`/`openURL`**, **`WKWebView evaluateJavaScript` XSS** (use `callAsyncJavaScript(arguments:)` instead), **`os_log privacy: .public`** (explicitly opts out of redaction — default `.private` is correct for sensitive values), **`@AppStorage`/`UserDefaults` for tokens** (plaintext plist), and **hardcoded secrets extractable via `strings`/Hopper**. Contains 9 real CVEs (2022–2024, CVSS 5.3–10.0), a 62-item checklist, and 14 tools including SwiftLint, dsdump, Frida, objection, osv-scanner, and Instruments Memory Debugger.
 
 ### Ruby Security
 

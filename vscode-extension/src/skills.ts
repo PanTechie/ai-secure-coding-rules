@@ -178,4 +178,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-objc.md',
     detail: 'NSKeyedUnarchiver, KVC injection, NSLog, performSelector:, arc4random, CocoaPods supply chain',
   },
+  {
+    key: 'security-swift',
+    label: 'Swift Security',
+    stdFile: 'code-security-swift.md',
+    detail: 'force-unwrap DoS, Codable mass assignment, CryptoKit, Vapor SQLi, actor isolation, SPM supply chain',
+  },
 ];
