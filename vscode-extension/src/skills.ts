@@ -184,4 +184,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-swift.md',
     detail: 'force-unwrap DoS, Codable mass assignment, CryptoKit, Vapor SQLi, actor isolation, SPM supply chain',
   },
+  {
+    key: 'security-go',
+    label: 'Go Security',
+    stdFile: 'code-security-go.md',
+    detail: 'os/exec injection, database/sql SQLi, goroutine races, missing timeouts, SSRF, govulncheck',
+  },
 ];

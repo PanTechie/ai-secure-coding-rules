@@ -59,6 +59,7 @@ SKILLS=(
   "security-dart|Dart & Flutter Security|code-security-dart.md"
   "security-objc|Objective-C Security|code-security-objc.md"
   "security-swift|Swift Security|code-security-swift.md"
+  "security-go|Go Security|code-security-go.md"
 )
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
