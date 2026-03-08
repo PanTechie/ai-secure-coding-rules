@@ -202,4 +202,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-react.md',
     detail: 'dangerouslySetInnerHTML XSS, javascript: URLs, localStorage tokens, CSP, Server Components, DOMPurify',
   },
+  {
+    key: 'security-nextjs',
+    label: 'Next.js Security',
+    stdFile: 'code-security-nextjs.md',
+    detail: 'CVE-2025-29927 middleware bypass, Server Actions auth, NEXT_PUBLIC_ leaks, next-auth, SSRF, ISR cache poisoning',
+  },
 ];
