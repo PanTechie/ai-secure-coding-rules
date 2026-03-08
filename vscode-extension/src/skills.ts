@@ -196,4 +196,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-rust.md',
     detail: 'unsafe/Send+Sync, integer overflow, diesel/sqlx SQLi, AES-GCM nonce reuse, cargo-audit, RustSec',
   },
+  {
+    key: 'security-react',
+    label: 'React Security',
+    stdFile: 'code-security-react.md',
+    detail: 'dangerouslySetInnerHTML XSS, javascript: URLs, localStorage tokens, CSP, Server Components, DOMPurify',
+  },
 ];
