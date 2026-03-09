@@ -226,4 +226,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-express.md',
     detail: 'middleware order auth bypass, SQL/NoSQL injection, CORS, Helmet, rate limiting, session/JWT, CSRF, multer, mass assignment',
   },
+  {
+    key: 'security-nestjs',
+    label: 'NestJS Security',
+    stdFile: 'code-security-nestjs.md',
+    detail: 'APP_GUARD bypass, ValidationPipe mass assignment, class-transformer CVE-2022-21190, JWT alg:none, TypeORM/Prisma SQLi, SSRF, GraphQL depth limits',
+  },
 ];
