@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **2,900+ security rules** across 29 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **28 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **3,000+ security rules** across 30 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **29 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -48,9 +48,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-rust.md`](standards/code-security-rust.md) | Rust Security Advisory Database (RustSec) + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Rust Secure Code Working Group | Rust 1.70+ web services, CLIs, embedded systems (axum, actix-web, diesel, sqlx, ring, rustls, reqwest) | 737 | ~130 |
 | [`standards/code-security-react.md`](standards/code-security-react.md) | React Security Documentation + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Snyk React Security Advisories | React 18+ / React 19 SPAs, SSR, and Server Components (Redux, Zustand, react-router, React Query, Vite) | 764 | ~110 |
 | [`standards/code-security-nextjs.md`](standards/code-security-nextjs.md) | Next.js Security Documentation + Vercel Security Advisories + OWASP Top 10:2025 + CWE/MITRE + NVD + Auth.js Security Advisories | Next.js 14+ App Router (Server Components, Server Actions, Route Handlers, Middleware) and Pages Router | 826 | ~120 |
-| | | **Total (detailed)** | **20,957** | **~2,827** |
+| [`standards/code-security-angular.md`](standards/code-security-angular.md) | Angular Security Documentation + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Angular CDK/Material Security Advisories | Angular 15+ SPAs, SSR (Universal), and PWAs (NgRx, RxJS, angular-oauth2-oidc, HttpClient, Service Workers) | 758 | ~110 |
+| | | **Total (detailed)** | **21,715** | **~2,937** |
 
-> **Total including essentials:** 29 files, 21,228 lines, ~2,919 rules
+> **Total including essentials:** 30 files, 21,986 lines, ~3,029 rules
 
 ---
 
@@ -94,7 +95,7 @@ git commit -m "chore: add AI secure coding rules"
 After the first install, use **`Manage AI Secure Coding Rules`** (`Ctrl+Shift+P` → `AI Secure Coding: Manage`):
 
 1. The extension fetches current file hashes from GitHub (one API call)
-2. A list shows all 27 skills with their status:
+2. A list shows all 28 skills with their status:
    - `✓ Up-to-date` — already on the latest version
    - `↑ Update available` — newer version on GitHub (pre-selected automatically)
    - `? Installed (version unknown)` — installed via shell script, version not tracked
@@ -233,9 +234,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-react/
     │   ├── SKILL.md                ← trigger: React code, dangerouslySetInnerHTML, javascript: URL, localStorage token, CSP, Server Components
     │   └── rules.md                ← React Security (764 lines)
-    └── security-nextjs/
-        ├── SKILL.md                ← trigger: Next.js code, middleware bypass, Server Actions, NEXT_PUBLIC_, next-auth, SSRF, ISR cache
-        └── rules.md                ← Next.js Security (826 lines)
+    ├── security-nextjs/
+    │   ├── SKILL.md                ← trigger: Next.js code, middleware bypass, Server Actions, NEXT_PUBLIC_, next-auth, SSRF, ISR cache
+    │   └── rules.md                ← Next.js Security (826 lines)
+    └── security-angular/
+        ├── SKILL.md                ← trigger: Angular code, bypassSecurityTrust*, [innerHTML], CSRF, ReDoS in pipes, NgRx, PKCE, ngCspNonce
+        └── rules.md                ← Angular Security (758 lines)
 ```
 
 ---
@@ -258,7 +262,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 27-skill structure as Claude Code.
+Same 28-skill structure as Claude Code.
 
 ---
 
@@ -344,6 +348,9 @@ You don't need all of them. Pick the files relevant to your project:
 | React + separate backend | `security-react` + `security-javascript` + relevant backend skill |
 | Next.js full-stack app | `security-nextjs` + `security-react` + `security-secrets` |
 | Next.js + external API | `security-nextjs` + `security-react` + `security-api` + `security-secrets` |
+| Angular SPA | `security-angular` + `security-javascript` + `security-secrets` |
+| Angular + separate backend | `security-angular` + `security-javascript` + relevant backend skill |
+| Angular Universal (SSR) | `security-angular` + `security-javascript` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |

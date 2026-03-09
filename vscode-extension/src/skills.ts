@@ -208,4 +208,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-nextjs.md',
     detail: 'CVE-2025-29927 middleware bypass, Server Actions auth, NEXT_PUBLIC_ leaks, next-auth, SSRF, ISR cache poisoning',
   },
+  {
+    key: 'security-angular',
+    label: 'Angular Security',
+    stdFile: 'code-security-angular.md',
+    detail: 'bypassSecurityTrust* XSS, CVE-2024-21490, CSRF, ReDoS in pipes, NgRx state exposure, PKCE, CSP ngCspNonce',
+  },
 ];
