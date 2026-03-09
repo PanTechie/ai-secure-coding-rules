@@ -220,4 +220,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-vue.md',
     detail: 'v-html XSS, Vue.compile() SSTI, VITE_ secret leaks, Pinia state exposure, Nuxt SSRF, CSP, CVE-2025-30208',
   },
+  {
+    key: 'security-express',
+    label: 'Express.js Security',
+    stdFile: 'code-security-express.md',
+    detail: 'middleware order auth bypass, SQL/NoSQL injection, CORS, Helmet, rate limiting, session/JWT, CSRF, multer, mass assignment',
+  },
 ];

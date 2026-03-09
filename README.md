@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **3,100+ security rules** across 31 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **30 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **3,200+ security rules** across 32 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **31 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -50,9 +50,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-nextjs.md`](standards/code-security-nextjs.md) | Next.js Security Documentation + Vercel Security Advisories + OWASP Top 10:2025 + CWE/MITRE + NVD + Auth.js Security Advisories | Next.js 14+ App Router (Server Components, Server Actions, Route Handlers, Middleware) and Pages Router | 826 | ~120 |
 | [`standards/code-security-angular.md`](standards/code-security-angular.md) | Angular Security Documentation + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Angular CDK/Material Security Advisories | Angular 15+ SPAs, SSR (Universal), and PWAs (NgRx, RxJS, angular-oauth2-oidc, HttpClient, Service Workers) | 758 | ~110 |
 | [`standards/code-security-vue.md`](standards/code-security-vue.md) | Vue.js Security Guide + Nuxt Security Module Docs + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Snyk Vue Security Advisories | Vue 3.x / Nuxt 3.x SPAs, SSR, and PWAs (Pinia, Vue Router, Vite, vue-i18n, nuxt-security) | 849 | ~120 |
-| | | **Total (detailed)** | **22,564** | **~3,057** |
+| [`standards/code-security-express.md`](standards/code-security-express.md) | Express.js Security Best Practices + Node.js Security WG + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Snyk Node.js Security Advisories | Express.js 4.x/5.x APIs and web apps (Helmet, express-rate-limit, express-session, jsonwebtoken, multer, Prisma/Sequelize, EJS/Handlebars/Pug) | 963 | ~130 |
+| | | **Total (detailed)** | **23,527** | **~3,187** |
 
-> **Total including essentials:** 31 files, 22,835 lines, ~3,149 rules
+> **Total including essentials:** 32 files, 23,798 lines, ~3,279 rules
 
 ---
 
@@ -96,7 +97,7 @@ git commit -m "chore: add AI secure coding rules"
 After the first install, use **`Manage AI Secure Coding Rules`** (`Ctrl+Shift+P` → `AI Secure Coding: Manage`):
 
 1. The extension fetches current file hashes from GitHub (one API call)
-2. A list shows all 29 skills with their status:
+2. A list shows all 30 skills with their status:
    - `✓ Up-to-date` — already on the latest version
    - `↑ Update available` — newer version on GitHub (pre-selected automatically)
    - `? Installed (version unknown)` — installed via shell script, version not tracked
@@ -241,9 +242,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-angular/
     │   ├── SKILL.md                ← trigger: Angular code, bypassSecurityTrust*, [innerHTML], CSRF, ReDoS in pipes, NgRx, PKCE, ngCspNonce
     │   └── rules.md                ← Angular Security (758 lines)
-    └── security-vue/
-        ├── SKILL.md                ← trigger: Vue/Nuxt code, v-html, Vue.compile(), VITE_ leaks, Pinia, useFetch SSRF, nuxt-security
-        └── rules.md                ← Vue.js / Nuxt Security (849 lines)
+    ├── security-vue/
+    │   ├── SKILL.md                ← trigger: Vue/Nuxt code, v-html, Vue.compile(), VITE_ leaks, Pinia, useFetch SSRF, nuxt-security
+    │   └── rules.md                ← Vue.js / Nuxt Security (849 lines)
+    └── security-express/
+        ├── SKILL.md                ← trigger: Express code, middleware order, CORS, Helmet, rate limiting, session, JWT, multer, mass assignment
+        └── rules.md                ← Express.js Security (963 lines)
 ```
 
 ---
@@ -266,7 +270,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 29-skill structure as Claude Code.
+Same 30-skill structure as Claude Code.
 
 ---
 
@@ -359,6 +363,9 @@ You don't need all of them. Pick the files relevant to your project:
 | Vue.js + separate backend | `security-vue` + `security-javascript` + relevant backend skill |
 | Nuxt.js full-stack app | `security-vue` + `security-javascript` + `security-secrets` |
 | Nuxt.js + external API | `security-vue` + `security-javascript` + `security-api` + `security-secrets` |
+| Express.js REST API | `security-express` + `security-javascript` + `security-api` + `security-secrets` |
+| Express.js web app (sessions) | `security-express` + `security-javascript` + `security-secrets` |
+| Express.js + MongoDB | `security-express` + `security-javascript` + `security-api` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |
