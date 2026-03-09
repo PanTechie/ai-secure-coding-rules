@@ -214,4 +214,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-angular.md',
     detail: 'bypassSecurityTrust* XSS, CVE-2024-21490, CSRF, ReDoS in pipes, NgRx state exposure, PKCE, CSP ngCspNonce',
   },
+  {
+    key: 'security-vue',
+    label: 'Vue.js / Nuxt Security',
+    stdFile: 'code-security-vue.md',
+    detail: 'v-html XSS, Vue.compile() SSTI, VITE_ secret leaks, Pinia state exposure, Nuxt SSRF, CSP, CVE-2025-30208',
+  },
 ];

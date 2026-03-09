@@ -13,7 +13,7 @@ A curated collection of security rules and skills for AI coding assistants. The 
 **Planned skill categories (in order of priority):**
 1. **Security standards** — OWASP, CWE, NIST, CISA (done: web, API, LLM, ASVS, mobile, secrets, IaC, CWE, privacy, SbD)
 2. **Programming languages** — Python 3 ✅, PHP ✅, JavaScript & TypeScript ✅ (combined: `security-javascript`), C# ✅ (combined with ASP.NET Core: `security-csharp`), Java & Kotlin ✅ (combined JVM skill: `security-jvm`), Clojure ✅ (`security-clojure`), Ruby ✅ (`security-ruby`), Elixir ✅ (`security-elixir`), C/C++ ✅ (`security-c-cpp`), Objective-C ✅ (`security-objc`), Swift ✅ (`security-swift`), Go ✅ (`security-go`), Rust ✅ (`security-rust`)
-3. **Frameworks** — React ✅ (`security-react`), Next.js ✅ (`security-nextjs`), Angular ✅ (`security-angular`), Django, FastAPI, Spring Boot, Laravel, Rails, Express, etc.
+3. **Frameworks** — React ✅ (`security-react`), Next.js ✅ (`security-nextjs`), Angular ✅ (`security-angular`), Vue.js/Nuxt ✅ (`security-vue`), Django, FastAPI, Spring Boot, Laravel, Rails, Express, etc.
 
 > **Keep this list updated** — mark languages as ✅ when their skill is created. For everything else (conventions, formats, process), CLAUDE.md is stable and only needs editing when a new platform format is discovered or a convention changes. The `README.md` is the live registry of completed skills with line counts.
 
