@@ -2,7 +2,7 @@
 
 > Comprehensive, OWASP-based security rules for AI-assisted development. Works with Claude Code, Gemini Antigravity, OpenAI Codex, Cursor, and other AI coding assistants.
 
-A curated collection of **3,500+ security rules** across 34 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **33 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
+A curated collection of **3,700+ security rules** across 35 files, derived from official OWASP, CWE/MITRE, NIST, CISA, CIS, NSA/CISA, and global privacy standards. Features a **lightweight always-on essentials file** (271 lines) that enforces critical security patterns automatically, plus **34 detailed skill files** for deep audits and domain-specific guidance. Drop into your project and let your AI write secure code by default.
 
 ---
 
@@ -53,9 +53,10 @@ These files contain comprehensive rules with code examples, framework-specific p
 | [`standards/code-security-express.md`](standards/code-security-express.md) | Express.js Security Best Practices + Node.js Security WG + OWASP Top 10:2025 + CWE/MITRE + NVD + GitHub Advisory Database + Snyk Node.js Security Advisories | Express.js 4.x/5.x APIs and web apps (Helmet, express-rate-limit, express-session, jsonwebtoken, multer, Prisma/Sequelize, EJS/Handlebars/Pug) | 963 | ~130 |
 | [`standards/code-security-nestjs.md`](standards/code-security-nestjs.md) | NestJS Official Security Docs + OWASP API Top 10:2023 + CWE/MITRE + NVD + class-transformer/class-validator Advisories + Snyk Node.js Security Advisories | NestJS v9/v10/v11 REST APIs, GraphQL, WebSockets, and Microservices (Guards, Pipes, TypeORM, Prisma, @nestjs/passport, @nestjs/throttler, RabbitMQ, Redis) | 1151 | ~155 |
 | [`standards/code-security-aspnetcore.md`](standards/code-security-aspnetcore.md) | Microsoft ASP.NET Core Security Docs + OWASP .NET Cheat Sheet + MSRC Advisories + CWE/MITRE + NVD + Snyk .NET Advisories | ASP.NET Core (.NET 6/7/8/9) web apps and APIs (Identity, EF Core, SignalR, Blazor, Minimal APIs, Data Protection, OpenIdConnect) | 1111 | ~150 |
-| | | **Total (detailed)** | **25,789** | **~3,492** |
+| [`standards/code-security-laravel.md`](standards/code-security-laravel.md) | Laravel Official Security Docs + OWASP PHP Security Cheat Sheet + CWE/MITRE + NVD + Snyk PHP Advisories + Enlightn Security Advisories + Roave Security Advisories | Laravel 9/10/11 web apps and APIs (Eloquent, Blade, Sanctum, Passport, Fortify, Queues, Storage, HTTP Client) | 1000 | ~145 |
+| | | **Total (detailed)** | **26,789** | **~3,637** |
 
-> **Total including essentials:** 34 files, 26,060 lines, ~3,584 rules
+> **Total including essentials:** 35 files, 27,060 lines, ~3,729 rules
 
 ---
 
@@ -99,7 +100,7 @@ git commit -m "chore: add AI secure coding rules"
 After the first install, use **`Manage AI Secure Coding Rules`** (`Ctrl+Shift+P` → `AI Secure Coding: Manage`):
 
 1. The extension fetches current file hashes from GitHub (one API call)
-2. A list shows all 32 skills with their status:
+2. A list shows all 33 skills with their status:
    - `✓ Up-to-date` — already on the latest version
    - `↑ Update available` — newer version on GitHub (pre-selected automatically)
    - `? Installed (version unknown)` — installed via shell script, version not tracked
@@ -253,9 +254,12 @@ cp -r .claude/skills/ /path/to/your-project/.claude/
     ├── security-nestjs/
     │   ├── SKILL.md                ← trigger: NestJS Guard bypass, ValidationPipe, class-transformer CVE, TypeORM/Prisma SQLi, GraphQL depth limits
     │   └── rules.md                ← NestJS Security (1151 lines)
-    └── security-aspnetcore/
-        ├── SKILL.md                ← trigger: middleware order, Identity, IAuthorizationService, Data Protection API, EF Core SQLi, SignalR, Blazor, Minimal API
-        └── rules.md                ← ASP.NET Core Security (1111 lines)
+    ├── security-aspnetcore/
+    │   ├── SKILL.md                ← trigger: middleware order, Identity, IAuthorizationService, Data Protection API, EF Core SQLi, SignalR, Blazor, Minimal API
+    │   └── rules.md                ← ASP.NET Core Security (1111 lines)
+    └── security-laravel/
+        ├── SKILL.md                ← trigger: whereRaw SQLi, mass assignment, Blade XSS, Sanctum, queue secrets, CVE-2021-3129
+        └── rules.md                ← Laravel Security (1000 lines)
 ```
 
 ---
@@ -278,7 +282,7 @@ cp -r .agent/ /path/to/your-project/
         └── rules.md                ← full rules content
 ```
 
-Same 32-skill structure as Claude Code.
+Same 33-skill structure as Claude Code.
 
 ---
 
@@ -380,6 +384,9 @@ You don't need all of them. Pick the files relevant to your project:
 | ASP.NET Core web app | `security-aspnetcore` + `security-csharp` + `security-secrets` |
 | ASP.NET Core REST API | `security-aspnetcore` + `security-csharp` + `security-api` + `security-secrets` |
 | ASP.NET Core + Blazor | `security-aspnetcore` + `security-csharp` + `security-secrets` |
+| Laravel web app | `security-laravel` + `security-php` + `security-secrets` |
+| Laravel REST API + Sanctum | `security-laravel` + `security-php` + `security-api` + `security-secrets` |
+| Laravel + Livewire | `security-laravel` + `security-php` + `security-secrets` |
 | Any project handling personal data | `security-privacy` + relevant skills above |
 | Containerized / Kubernetes | `security-iac` + `security-secrets` + relevant app skill |
 | New product / greenfield project | `security-sbd` + relevant app skills |

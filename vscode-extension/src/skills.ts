@@ -238,4 +238,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-aspnetcore.md',
     detail: 'middleware order, Identity lockout, IAuthorizationService IDOR, Data Protection API, CSRF, EF Core SQLi, SignalR, Blazor XSS, Minimal API, CVE-2024-35264',
   },
+  {
+    key: 'security-laravel',
+    label: 'Laravel Security',
+    stdFile: 'code-security-laravel.md',
+    detail: 'Eloquent mass assignment, whereRaw SQLi, Blade XSS, CSRF, Gates/Policies IDOR, Sanctum/Passport, queue secrets, CVE-2021-3129 Ignition RCE',
+  },
 ];
