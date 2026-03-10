@@ -232,4 +232,10 @@ export const ALL_SKILLS: Skill[] = [
     stdFile: 'code-security-nestjs.md',
     detail: 'APP_GUARD bypass, ValidationPipe mass assignment, class-transformer CVE-2022-21190, JWT alg:none, TypeORM/Prisma SQLi, SSRF, GraphQL depth limits',
   },
+  {
+    key: 'security-aspnetcore',
+    label: 'ASP.NET Core Security',
+    stdFile: 'code-security-aspnetcore.md',
+    detail: 'middleware order, Identity lockout, IAuthorizationService IDOR, Data Protection API, CSRF, EF Core SQLi, SignalR, Blazor XSS, Minimal API, CVE-2024-35264',
+  },
 ];
